@@ -1,0 +1,38 @@
+.login-card-container {
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+}
+
+.login-card {
+  width: 400px;
+  padding: 20px;
+  box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+}
+
+.title {
+  font-size: x-large;
+  padding-bottom: 20px;
+}
+
+.login-button {
+  width: 100%;
+  font-size: medium;
+}
+
+.form-field {
+  width: 100%;
+}
+
+a {
+  cursor: pointer;
+}
+
+.button-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  
+}
