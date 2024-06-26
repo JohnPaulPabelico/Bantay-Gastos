@@ -6,7 +6,7 @@ import { AuthService } from 'src/app/shared/auth.service';
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.scss'],
 })
-export class LoginComponent implements OnInit{
+export class LoginComponent implements OnInit {
   email: string = '';
   password: string = '';
 
@@ -29,5 +29,9 @@ export class LoginComponent implements OnInit{
 
     this.email = '';
     this.password = '';
+  }
+
+  signInWithGoogle() {
+    this.auth.googleSignIn();
   }
 }
