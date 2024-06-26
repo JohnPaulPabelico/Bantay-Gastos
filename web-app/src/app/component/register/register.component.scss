@@ -9,7 +9,28 @@
 .register-card {
   width: 400px;
   padding: 20px;
-  box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+  outline: 1px solid #000000;
+  border-radius: 1.5rem;
+  box-shadow: 0px 5px 0px 1px rgba(0, 0, 0, 0.9);
+  background: #eee;
+}
+
+.button {
+  outline: 1px solid #000000;
+  background-color: #adff2f;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  text-align: center;
+  padding: 20px;
+  font-size: large;
+  border-radius: 1.5rem;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+}
+
+.button:hover {
+  box-shadow: 0px 5px 0px 1px rgba(0, 0, 0, 0.9);
 }
 
 .title {
@@ -28,10 +49,52 @@
 
 a {
   cursor: pointer;
+  text-decoration: none; /* Remove underline from links */
+  color: inherit;
+  font-size: medium;
+
+  &:hover {
+    text-decoration: underline;
+  }
 }
 
 .button-container {
   display: flex;
   justify-content: center;
   align-items: center;
+  width: 100%;
+}
+
+::ng-deep .mdc-text-field:not(.mdc-text-field--disabled) .mdc-floating-label {
+  color: slategray;
+}
+
+::ng-deep
+  .mdc-text-field--outlined:not(.mdc-text-field--disabled)
+  .mdc-notched-outline__leading,
+::ng-deep
+  .mdc-text-field--outlined:not(.mdc-text-field--disabled)
+  .mdc-notched-outline__notch,
+::ng-deep
+  .mdc-text-field--outlined:not(.mdc-text-field--disabled)
+  .mdc-notched-outline__trailing {
+  border-color: slategray;
+}
+
+::ng-deep
+  .mdc-text-field--outlined:not(
+    .mdc-text-field--disabled
+  ).mdc-text-field--focused
+  .mdc-notched-outline__leading,
+::ng-deep
+  .mdc-text-field--outlined:not(
+    .mdc-text-field--disabled
+  ).mdc-text-field--focused
+  .mdc-notched-outline__notch,
+::ng-deep
+  .mdc-text-field--outlined:not(
+    .mdc-text-field--disabled
+  ).mdc-text-field--focused
+  .mdc-notched-outline__trailing {
+  border-color: rgb(0, 165, 0);
 }
