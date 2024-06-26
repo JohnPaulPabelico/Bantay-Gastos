@@ -14,7 +14,14 @@ import { MatCardModule } from '@angular/material/card';
 import { FormsModule } from '@angular/forms';
 import { MatDialogModule } from '@angular/material/dialog';
 import { MatInputModule } from '@angular/material/input';
-import { MatToolbarModule } from '@angular/material/toolbar';
+import { MatSidenavModule } from '@angular/material/sidenav';
+import { MatIconModule } from '@angular/material/icon';
+import { IncomeComponent } from './component/income/income.component';
+import { ExpensesComponent } from './component/expenses/expenses.component';
+import { ForgotPasswordComponent } from './component/forgot-password/forgot-password.component';
+import { VerifyEmailComponent } from './verify-email/verify-email.component';
+import { MatDividerModule } from '@angular/material/divider';
+import { ForgotPasswordEmailComponent } from './forgot-password-email/forgot-password-email.component';
 
 @NgModule({
   declarations: [
@@ -22,6 +29,11 @@ import { MatToolbarModule } from '@angular/material/toolbar';
     DashboardComponent,
     LoginComponent,
     RegisterComponent,
+    IncomeComponent,
+    ExpensesComponent,
+    ForgotPasswordComponent,
+    VerifyEmailComponent,
+    ForgotPasswordEmailComponent,
   ],
   imports: [
     BrowserModule,
@@ -33,7 +45,9 @@ import { MatToolbarModule } from '@angular/material/toolbar';
     MatDialogModule,
     FormsModule,
     MatInputModule,
-    MatToolbarModule,
+    MatIconModule,
+    MatSidenavModule,
+    MatDividerModule,
   ],
   providers: [],
   bootstrap: [AppComponent],
