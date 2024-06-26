@@ -1,3 +1,57 @@
-<mat-toolbar class="toolbar">
+<!-- <mat-toolbar class="toolbar">
   <img src="assets/gastos.png" height="70" class="logo" />
-</mat-toolbar>
+</mat-toolbar> -->
+
+<mat-drawer-container class="example-container">
+  <mat-drawer class="drawer" mode="side" opened>
+    <img src="assets/gastos.png" height="70" class="logo" />
+    <div class="button-group">
+      <a class="active">
+        <mat-icon
+          aria-hidden="false"
+          aria-label="Example home icon"
+          fontIcon="home"
+          class="icon"
+        ></mat-icon>
+        <div>Dashboard</div>
+      </a>
+      <a routerLink="/expenses" class="list-item">
+        <mat-icon
+          aria-hidden="false"
+          aria-label="Example home icon"
+          fontIcon="shopping_cart"
+          class="icon"
+        ></mat-icon>
+        <div>Expenses</div>
+      </a>
+      <a routerLink="/income" class="list-item">
+        <mat-icon
+          aria-hidden="false"
+          aria-label="Example home icon"
+          fontIcon="payments"
+          class="icon"
+        ></mat-icon>
+        <div>Income</div>
+      </a>
+    </div>
+    <div class="logout-container">
+      <div class="logout-button" (click)="logout()">
+        <mat-icon
+          aria-hidden="false"
+          aria-label="Example home icon"
+          fontIcon="logout"
+          class="icon"
+        ></mat-icon>
+        <span>Logout</span>
+      </div>
+    </div>
+  </mat-drawer>
+  <mat-drawer-content>
+    <div class="transaction-container">
+      <div class="transaction-title">Dashboard</div>
+    </div>
+    <div class="transaction-container">
+      <div class="transaction-title">Analysis</div>
+    </div>
+  </mat-drawer-content>
+</mat-drawer-container>

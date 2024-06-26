@@ -1,5 +1,138 @@
 .toolbar {
   position: fixed;
-  background-color: greenyellow;
+  background-color: #adff2f;
   box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+}
+.example-container {
+  width: auto;
+  height: 100%;
+  /* The background property is added to clearly distinguish the borders between drawer and main
+     content */
+  background: #eee;
+}
+
+.logo {
+  margin-top: 20px;
+  margin-left: 10px;
+}
+
+.drawer {
+  width: 300px;
+  display: flex;
+  height: 100%;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.button-group {
+  display: flex;
+  flex-direction: column;
+  margin-top: 30px;
+  height: 75%;
+}
+
+ul {
+  list-style-type: none; /* Remove bullet points */
+  padding: 0; /* Remove default padding */
+  margin: 0; /* Remove default margin */
+}
+
+a {
+  text-decoration: none; /* Remove underline from links */
+  color: inherit; /* Optional: inherit the color from the parent element */
+}
+
+.active {
+  outline: 1px solid #000000;
+  background-color: #adff2f;
+  font-weight: 700;
+  box-shadow: -1px 5px 0px 1px rgba(0, 0, 0, 0.9);
+  display: flex;
+  align-items: center;
+  text-align: center;
+  margin-right: 40px;
+  margin-top: 4px;
+  margin-bottom: 4px;
+  padding: 20px;
+  font-size: large;
+  border-top-right-radius: 1.5rem;
+  border-bottom-right-radius: 1.5rem;
+}
+
+.list-item {
+  display: flex;
+  align-items: center;
+  text-align: center;
+  margin-right: 40px;
+  margin-top: 4px;
+  margin-bottom: 4px;
+  padding: 20px;
+  font-size: large;
+  border-top-right-radius: 1.5rem;
+  border-bottom-right-radius: 1.5rem;
+  transition-property: all;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 150ms;
+}
+
+.icon {
+  margin-right: 15px;
+}
+
+.list-item:hover {
+  background-color: #d1d1d1;
+}
+
+.logout-container {
+  display: flex;
+}
+
+.logout-button {
+  display: flex;
+  align-items: center;
+  text-align: center;
+  color: hsla(0, 0%, 0%, 0.6);
+  cursor: pointer;
+  margin-left: 40px;
+  transition: all 0.1s ease-in-out;
+  font-size: large;
+}
+.logout-button:hover {
+  color: rgba(255, 0, 0, 0.534);
+}
+
+.transaction-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px;
+  margin: 20px;
+  background-color: white;
+  border-radius: 1.5rem;
+  box-shadow: 0px 5px 0px 0px rgba(0, 0, 0, 1);
+  border: #000000 solid 1px;
+}
+
+.transaction-title {
+  font-size: x-large;
+  font-weight: 800;
+}
+
+.button {
+  outline: 1px solid #000000;
+  background-color: #adff2f;
+  font-weight: 500;
+
+  display: flex;
+  align-items: center;
+  text-align: center;
+  padding: 20px;
+  font-size: large;
+  border-radius: 1.5rem;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+}
+
+.button:hover {
+  box-shadow: 0px 5px 0px 1px rgba(0, 0, 0, 0.9);
 }
