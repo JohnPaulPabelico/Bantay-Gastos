@@ -78,3 +78,11 @@ body {
   .mdc-floating-label {
   color: rgb(0, 165, 0);
 }
+
+button {
+  all: unset;
+}
+
+button:focus {
+  outline: revert;
+}
