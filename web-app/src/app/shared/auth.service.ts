@@ -6,17 +6,40 @@ import {
   GithubAuthProvider,
   FacebookAuthProvider,
 } from '@angular/fire/auth';
+import {
+  AngularFirestore,
+  AngularFirestoreDocument,
+} from '@angular/fire/compat/firestore';
+import { User } from '../model/users';
 
 @Injectable({
   providedIn: 'root',
 })
 export class AuthService {
-  constructor(private fireauth: AngularFireAuth, private router: Router) {}
+  constructor(
+    private fireauth: AngularFireAuth,
+    private router: Router,
+    private firestore: AngularFirestore
+  ) {}
+
+  setUserData(user: any) {
+    const userRef: AngularFirestoreDocument<any> = this.firestore.doc(
+      `users/${user.uid}`
+    );
+    const userData: User = {
+      uid: user.uid,
+      email: user.email,
+    };
+    return userRef.set(userData, {
+      merge: true,
+    });
+  }
 
   login(email: string, password: string) {
-    this.fireauth.signInWithEmailAndPassword(email, password).then(
+    return this.fireauth.signInWithEmailAndPassword(email, password).then(
       (res) => {
         localStorage.setItem('token', 'true');
+        this.setUserData(res.user);
 
         if (res.user?.emailVerified == true) {
           this.router.navigate(['/dashboard']);
@@ -37,6 +60,7 @@ export class AuthService {
       (res) => {
         alert('Registration successful');
         this.sendEmailVerification(res.user);
+        this.setUserData(res.user);
         this.router.navigate(['/login']);
       },
       (err) => {
@@ -91,28 +115,4 @@ export class AuthService {
       }
     );
   }
-
-  // facebookSignIn() {
-  //   return this.fireauth.signInWithPopup(new FacebookAuthProvider()).then(
-  //     (res) => {
-  //       this.router.navigate(['/dashboard']);
-  //       localStorage.setItem('token', JSON.stringify(res.user?.uid));
-  //     },
-  //     (err) => {
-  //       alert(err.message);
-  //     }
-  //   );
-  // }
-
-  // githubSignIn() {
-  //   return this.fireauth.signInWithPopup(new GithubAuthProvider()).then(
-  //     (res) => {
-  //       this.router.navigate(['/dashboard']);
-  //       localStorage.setItem('token', JSON.stringify(res.user?.uid));
-  //     },
-  //     (err) => {
-  //       alert(err.message);
-  //     }
-  //   );
-  // }
 }
