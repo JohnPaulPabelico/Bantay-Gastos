@@ -8,17 +8,73 @@ import { IncomeComponent } from './component/income/income.component';
 import { ForgotPasswordComponent } from './component/forgot-password/forgot-password.component';
 import { VerifyEmailComponent } from './verify-email/verify-email.component';
 import { ForgotPasswordEmailComponent } from './forgot-password-email/forgot-password-email.component';
+import {
+  AngularFireAuthGuard,
+  redirectUnauthorizedTo,
+  redirectLoggedInTo,
+} from '@angular/fire/compat/auth-guard';
+
+const redirectUnauthorizedToLogin = () => redirectUnauthorizedTo(['login']);
+const redirectLoggedInToDashboard = () => redirectLoggedInTo(['dashboard']);
 
 const routes: Routes = [
   { path: '', redirectTo: 'login', pathMatch: 'full' },
-  { path: 'login', component: LoginComponent },
-  { path: 'register', component: RegisterComponent },
-  { path: 'dashboard', component: DashboardComponent },
-  { path: 'expenses', component: ExpensesComponent },
-  { path: 'income', component: IncomeComponent },
-  { path: 'forgot', component: ForgotPasswordComponent },
-  { path: 'verify', component: VerifyEmailComponent },
-  { path: 'forgot/link', component: ForgotPasswordEmailComponent },
+  {
+    path: 'login',
+    component: LoginComponent,
+    canActivate: [AngularFireAuthGuard],
+    title: 'Bantay Gastos - Login',
+    data: { authGuardPipe: redirectLoggedInToDashboard },
+  },
+  {
+    path: 'register',
+    component: RegisterComponent,
+    canActivate: [AngularFireAuthGuard],
+    title: 'Bantay Gastos - Register',
+    data: { authGuardPipe: redirectLoggedInToDashboard },
+  },
+  {
+    path: 'dashboard',
+    component: DashboardComponent,
+    canActivate: [AngularFireAuthGuard],
+    title: 'Bantay Gastos - Dashboard',
+    data: { authGuardPipe: redirectUnauthorizedToLogin },
+  },
+  {
+    path: 'expenses',
+    component: ExpensesComponent,
+    canActivate: [AngularFireAuthGuard],
+    title: 'Bantay Gastos - Expenses',
+    data: { authGuardPipe: redirectUnauthorizedToLogin },
+  },
+  {
+    path: 'income',
+    component: IncomeComponent,
+    canActivate: [AngularFireAuthGuard],
+    title: 'Bantay Gastos - Income',
+    data: { authGuardPipe: redirectUnauthorizedToLogin },
+  },
+  {
+    path: 'forgot',
+    component: ForgotPasswordComponent,
+    canActivate: [AngularFireAuthGuard],
+    title: 'Forgot Password',
+    data: { authGuardPipe: redirectLoggedInToDashboard },
+  },
+  {
+    path: 'verify',
+    component: VerifyEmailComponent,
+    canActivate: [AngularFireAuthGuard],
+    title: 'Verify Email',
+    data: { authGuardPipe: redirectLoggedInToDashboard },
+  },
+  {
+    path: 'forgot/link',
+    component: ForgotPasswordEmailComponent,
+    canActivate: [AngularFireAuthGuard],
+    title: 'Forgot Password',
+    data: { authGuardPipe: redirectLoggedInToDashboard },
+  },
 ];
 
 @NgModule({
