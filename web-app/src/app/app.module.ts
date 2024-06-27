@@ -1,10 +1,8 @@
 import { environment } from '../environments/environment';
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
-
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
-import { AngularFireModule } from '@angular/fire/compat';
 import { DashboardComponent } from './component/dashboard/dashboard.component';
 import { LoginComponent } from './component/login/login.component';
 import { RegisterComponent } from './component/register/register.component';
@@ -22,6 +20,12 @@ import { ForgotPasswordComponent } from './component/forgot-password/forgot-pass
 import { VerifyEmailComponent } from './verify-email/verify-email.component';
 import { MatDividerModule } from '@angular/material/divider';
 import { ForgotPasswordEmailComponent } from './forgot-password-email/forgot-password-email.component';
+import { MatList, MatListModule } from '@angular/material/list';
+
+import { AngularFireAuthModule } from '@angular/fire/compat/auth';
+import { AngularFirestoreModule } from '@angular/fire/compat/firestore';
+import { AngularFireModule } from '@angular/fire/compat';
+import { ScrollingModule } from '@angular/cdk/scrolling';
 
 @NgModule({
   declarations: [
@@ -39,6 +43,8 @@ import { ForgotPasswordEmailComponent } from './forgot-password-email/forgot-pas
     BrowserModule,
     AppRoutingModule,
     AngularFireModule.initializeApp(environment.firebase),
+    AngularFirestoreModule,
+    AngularFireAuthModule,
     BrowserAnimationsModule,
     MatCardModule,
     MatButtonModule,
@@ -48,6 +54,8 @@ import { ForgotPasswordEmailComponent } from './forgot-password-email/forgot-pas
     MatIconModule,
     MatSidenavModule,
     MatDividerModule,
+    MatListModule,
+    ScrollingModule,
   ],
   providers: [],
   bootstrap: [AppComponent],
