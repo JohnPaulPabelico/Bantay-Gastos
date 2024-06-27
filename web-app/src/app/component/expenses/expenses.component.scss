@@ -1,8 +1,3 @@
-.toolbar {
-  position: fixed;
-  background-color: #adff2f;
-  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
-}
 .example-container {
   width: auto;
   height: 100%;
@@ -110,17 +105,123 @@ a {
   font-weight: 800;
 }
 
-.transaction-container {
+.welcome-container {
   display: flex;
   align-items: center;
   justify-content: space-between;
   padding: 20px;
   margin: 20px;
+}
+
+.transaction-container {
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+}
+
+.total-expenses-container {
+  display: flex;
+  justify-content: center;
+}
+
+.total-expenses {
+  display: flex;
+  align-items: center;
+  padding: 20px;
+  width: 75%;
+  background-color: white;
+  border-radius: 1.5rem;
+  box-shadow: 0px 5px 0px 0px rgba(0, 0, 0, 1);
+  border: #000000 solid 1px;
+  font-size: xx-large;
+  font-weight: 700;
+}
+
+.total-expenses-amount {
+  color: #ff362f;
+}
+
+.expenses-panel-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-evenly;
+  padding: 20px;
+  width: 75%;
   background-color: white;
   border-radius: 1.5rem;
   box-shadow: 0px 5px 0px 0px rgba(0, 0, 0, 1);
   border: #000000 solid 1px;
 }
+
+.expenses-item-container {
+  width: 100%;
+  margin-left: 20px;
+  max-height: 526px; /* Adjust the max height as needed */
+  overflow: auto;
+}
+
+.virtual-scroll-container {
+  height: 100%;
+  width: 100%;
+}
+
+.expenses-item {
+  width: 98%;
+  margin-left: 1px;
+  padding: 20px;
+  outline: 1px solid #000000;
+  border-radius: 1.5rem;
+  box-shadow: 0px 5px 0px 1px rgba(0, 0, 0, 0.9);
+  background: #eee;
+  min-height: 96px;
+}
+
+.expenses-item-title {
+  font-size: x-large;
+  font-weight: 600;
+}
+
+.expenses-item-details {
+  margin-top: 10px;
+  display: flex;
+}
+
+.expenses-item-details .amount {
+  margin-right: 40px;
+  display: flex;
+  align-items: center;
+  font-size: large;
+}
+.expenses-item-details .date {
+  margin-right: 40px;
+  display: flex;
+  align-items: center;
+  font-size: large;
+}
+.expenses-item-details .description {
+  margin-right: 40px;
+  display: flex;
+  align-items: center;
+  font-size: large;
+}
+
+.expenses-item-details .delete {
+  margin-right: 40px;
+  display: flex;
+  align-items: center;
+  font-size: large;
+  outline: 1px solid #000000;
+  background-color: #ff362f;
+  border-radius: 0.5rem;
+  padding: 3px;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+  margin-bottom: 1px;
+}
+
+// .expenses-item-details .delete:hover {
+//   box-shadow: 0px 5px 0px 1px rgba(0, 0, 0, 0.9);
+// }
 
 .transaction-title {
   font-size: x-large;
@@ -144,4 +245,33 @@ a {
 
 .button:hover {
   box-shadow: 0px 5px 0px 1px rgba(0, 0, 0, 0.9);
+}
+
+.expenses-card {
+  width: 400px;
+  padding: 20px;
+  outline: 1px solid #000000;
+  border-radius: 1.5rem;
+  box-shadow: 0px 5px 0px 1px rgba(0, 0, 0, 0.9);
+  background: #eee;
+}
+
+.form-field {
+  width: 100%;
+  font-size: large;
+}
+
+.button-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+}
+
+.mat-list-item {
+  align-items: flex-start;
+}
+
+.mat-list-item .mat-list-item-content {
+  align-items: flex-start;
 }

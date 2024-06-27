@@ -43,12 +43,99 @@
     </div>
   </mat-drawer>
   <mat-drawer-content>
-    <div class="transaction-container">
-      <div class="transaction-title">All Expenses</div>
-      <div class="button">Add Expense</div>
+    <div class="welcome-container">
+      <div class="transaction-title">Expenses</div>
+    </div>
+    <div class="total-expenses-container">
+      <div class="total-expenses">
+        Total Expenses:<span class="total-expenses-amount">
+          &nbsp;-{{ totalAmount }}</span
+        >
+      </div>
     </div>
     <div class="transaction-container">
-      <div class="transaction-title">Total Expenses:</div>
+      <div class="expenses-panel-container">
+        <div class="transaction-title">
+          <div>
+            <mat-card class="expenses-card" appearance="outlined">
+              <mat-card-header>
+                <mat-card-title class="title">Add an expense</mat-card-title>
+              </mat-card-header>
+              <br />
+              <mat-card-content>
+                <form #f="ngForm" (ngSubmit)="addExpense(f)">
+                  <mat-form-field
+                    class="form-field white-backgrounded-field green-bordered-field"
+                    appearance="outline"
+                  >
+                    <mat-label>Title</mat-label>
+                    <input matInput type="text" name="Title" ngModel />
+                  </mat-form-field>
+                  <mat-form-field
+                    class="form-field white-backgrounded-field green-bordered-field"
+                    appearance="outline"
+                  >
+                    <mat-label>Amount</mat-label>
+                    <input matInput type="number" name="Amount" ngModel />
+                  </mat-form-field>
+                  <mat-form-field
+                    class="form-field white-backgrounded-field green-bordered-field"
+                    appearance="outline"
+                  >
+                    <mat-label>Date</mat-label>
+                    <input matInput type="date" name="date" ngModel />
+                  </mat-form-field>
+                  <mat-form-field
+                    class="form-field white-backgrounded-field green-bordered-field"
+                    appearance="outline"
+                  >
+                    <mat-label>Description</mat-label>
+                    <textarea matInput name="description" ngModel></textarea>
+                  </mat-form-field>
+                  <div class="button-container">
+                    <button class="button" type="submit">Add</button>
+                  </div>
+                </form>
+              </mat-card-content>
+            </mat-card>
+          </div>
+        </div>
+        <div class="expenses-item-container">
+          <mat-list id="expenses-list" *ngFor="let expense of expenseData">
+            <mat-list-item class="expenses-item">
+              <div class="expenses-item-content">
+                <div>
+                  <div class="expenses-item-title">
+                    {{ expense.title }}
+                  </div>
+                  <div class="expenses-item-details">
+                    <div class="amount">
+                      <mat-icon fontIcon="attach_money"></mat-icon>
+                      <span> -{{ expense.amount }}</span>
+                    </div>
+                    <div class="date">
+                      <mat-icon fontIcon="calendar_today"></mat-icon>
+                      <span> {{ expense.date }}</span>
+                    </div>
+                    <div class="description">
+                      <mat-icon fontIcon="chat_bubble"></mat-icon>
+                      <span> {{ expense.description }}</span>
+                    </div>
+                    <div>
+                      <button
+                        class="delete"
+                        (click)="deleteExpense(expense.id)"
+                      >
+                        <mat-icon fontIcon="delete"></mat-icon>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </mat-list-item>
+          </mat-list>
+        </div>
+      </div>
     </div>
   </mat-drawer-content>
 </mat-drawer-container>
