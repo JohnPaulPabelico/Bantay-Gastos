@@ -1,13 +1,12 @@
-import { Component } from '@angular/core';
+import { Component, ViewChild } from '@angular/core';
 import { AuthService } from 'src/app/shared/auth.service';
-import { Expenses } from 'src/app/model/expenses';
 import { ExpenseService } from 'src/app/shared/expense.service';
-import { Subject } from 'rxjs';
+import { Subject, takeUntil, tap, timestamp } from 'rxjs';
 import { NgForm } from '@angular/forms';
 import { AngularFirestore } from '@angular/fire/compat/firestore';
 import { AngularFireAuth } from '@angular/fire/compat/auth';
 import firebase from 'firebase/compat/app';
-import { Observable } from 'rxjs';
+import { Timestamp } from 'firebase/firestore';
 
 @Component({
   selector: 'app-expenses',
@@ -15,6 +14,7 @@ import { Observable } from 'rxjs';
   styleUrls: ['./expenses.component.scss'],
 })
 export class ExpensesComponent {
+  @ViewChild('expenseForm') expenseForm!: NgForm; // Non-null assertion operator// Reference to the form
   constructor(
     private auth: AuthService,
     private expenseService: ExpenseService,
@@ -24,10 +24,12 @@ export class ExpensesComponent {
 
   expenseData: any[] = [];
   totalAmount: number = 0; // Initialize totalAmount
+  uid: string | null = null;
 
   private unsubscribe$ = new Subject<void>();
-  private currentUser: firebase.User | null = null;
   isLoading = false;
+  isFilled = false;
+  isEmpty = false;
 
   calculateTotalAmount() {
     this.totalAmount = this.expenseData.reduce(
@@ -37,42 +39,61 @@ export class ExpensesComponent {
   }
 
   addExpense(form: NgForm) {
+    this.isFilled = false;
+    console.log('current UID:', this.uid);
+    if (!this.uid) {
+      console.error('Not currently signed in');
+      return;
+    }
+
+    const dateInt = new Date(form.value.date).getTime();
+
+    const firestoreTimestamp: Timestamp = Timestamp.fromDate(form.value.date);
+    console.log('Firestore Timestamp:', firestoreTimestamp);
+    const firestoreTimestampString = firestoreTimestamp.toDate().toString();
+
+    const date = new Date(firestoreTimestampString);
+
+    // Step 2: Format the date into "MMM DD YYYY" format
+    const formattedDate = date.toLocaleDateString('en-US', {
+      month: 'short',
+      day: '2-digit',
+      year: 'numeric',
+    });
+
+    console.log(formattedDate); // Output: "Jun 06, 2024"
+
     const expensesData: any = {
       title: form.value.Title,
       amount: form.value.Amount,
-      date: form.value.date,
+      dateString: formattedDate,
+      dateInt: dateInt,
+      date: date,
       description: form.value.description,
-      id: '', // Initialize id field
+      createdById: this.uid,
     };
 
-    this.firestore
-      .collection('expenses')
-      .add(expensesData)
+    if (
+      !expensesData.title ||
+      !expensesData.amount ||
+      !expensesData.date ||
+      !expensesData.description
+    ) {
+      this.isFilled = false;
+      console.error('All fields are required');
+      return;
+    }
+    this.isFilled = true;
+    console.log('Filled in fields:', expensesData);
+
+    this.expenseService
+      .createExpense(expensesData)
       .then((docRef) => {
         // Update the document with the generated ID
         expensesData.id = docRef.id;
 
         // Update the document in Firestore with the generated ID
-        this.firestore
-          .collection('expenses')
-          .doc(docRef.id)
-          .set(expensesData)
-          .then(() => {
-            console.log('Document successfully written with ID: ', docRef.id);
-
-            // Optionally, update your expenseData array or any other logic
-            this.expenseData.push(expensesData); // Example: Pushing new expense to array
-
-            // Reset the form or perform any other necessary operations
-            form.resetForm();
-          })
-          .catch((error) => {
-            console.error(
-              'Error updating document with ID: ',
-              docRef.id,
-              error
-            );
-          });
+        form.reset();
       })
       .catch((error) => {
         console.error('Error writing document: ', error);
@@ -80,12 +101,24 @@ export class ExpensesComponent {
   }
 
   getExpense() {
-    this.firestore
-      .collection('expenses')
-      .valueChanges()
+    this.isLoading = true;
+    console.log('User ID: ' + this.uid);
+    if (!this.uid) {
+      console.error('Not currently signed ins');
+      return;
+    }
+
+    this.expenseService
+      .readExpense(this.uid)
+      .pipe(
+        takeUntil(this.unsubscribe$),
+        tap(() => console.log('expenses subscription unsubscribed'))
+      )
       .subscribe(
         (expenses: any[]) => {
+          this.isLoading = false;
           this.expenseData = expenses;
+          this.isEmpty = expenses.length === 0;
           console.log('Fetched expenses:', this.expenseData);
           this.calculateTotalAmount();
         },
@@ -108,22 +141,23 @@ export class ExpensesComponent {
       });
   }
 
-  getUserId() {
-    this.fireAuth.currentUser
-      .then((user) => {
-        if (user) {
-          console.log('User ID: ' + user.uid);
-          // You can use the user ID here
-        } else {
-          console.log('No user is currently signed in.');
-        }
-      })
-      .catch((error) => {
-        console.error('Error getting current user: ', error);
-      });
+  async getUserId() {
+    try {
+      const user = await this.fireAuth.currentUser;
+      if (user) {
+        this.uid = user.uid;
+        console.log('User ID: ' + this.uid);
+      } else {
+        console.log('No user is currently signed in.');
+      }
+    } catch (error) {
+      console.error('Error getting current user: ', error);
+    }
   }
 
-  ngOnInit() {
+  async ngOnInit(): Promise<void> {
+    await this.getUserId();
+    this.isFilled = true;
     this.getExpense();
   }
 
