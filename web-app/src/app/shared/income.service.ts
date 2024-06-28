@@ -8,22 +8,22 @@ import { Observable, map } from 'rxjs';
 @Injectable({
   providedIn: 'root',
 })
-export class ExpenseService {
+export class IncomeService {
   constructor(private firestore: AngularFirestore) {}
 
-  createExpense(expense: any): Promise<DocumentReference<any>> {
-    return this.firestore.collection('expenses').add({ ...expense });
+  createIncome(income: any): Promise<DocumentReference<any>> {
+    return this.firestore.collection('income').add({ ...income });
   }
 
-  readExpense(uid: string): Observable<any[]> {
+  readIncome(uid: string): Observable<any[]> {
     return this.firestore
-      .collection('expenses', (ref) =>
+      .collection('income', (ref) =>
         ref.where('createdById', '==', uid).orderBy('dateInt', 'desc')
       )
       .valueChanges({ idField: 'id' });
   }
 
-  deleteExpense(id: string): Promise<void> {
-    return this.firestore.collection('expenses').doc(id).delete();
+  deleteIncome(id: string): Promise<void> {
+    return this.firestore.collection('income').doc(id).delete();
   }
 }
