@@ -20,12 +20,15 @@ import { ForgotPasswordComponent } from './component/forgot-password/forgot-pass
 import { VerifyEmailComponent } from './verify-email/verify-email.component';
 import { MatDividerModule } from '@angular/material/divider';
 import { ForgotPasswordEmailComponent } from './forgot-password-email/forgot-password-email.component';
-import { MatList, MatListModule } from '@angular/material/list';
+import { MatListModule } from '@angular/material/list';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatNativeDateModule } from '@angular/material/core';
 
 import { AngularFireAuthModule } from '@angular/fire/compat/auth';
 import { AngularFirestoreModule } from '@angular/fire/compat/firestore';
 import { AngularFireModule } from '@angular/fire/compat';
 import { ScrollingModule } from '@angular/cdk/scrolling';
+import { TruncatePipe } from './truncate.pipe';
 
 @NgModule({
   declarations: [
@@ -38,6 +41,7 @@ import { ScrollingModule } from '@angular/cdk/scrolling';
     ForgotPasswordComponent,
     VerifyEmailComponent,
     ForgotPasswordEmailComponent,
+    TruncatePipe,
   ],
   imports: [
     BrowserModule,
@@ -56,6 +60,8 @@ import { ScrollingModule } from '@angular/cdk/scrolling';
     MatDividerModule,
     MatListModule,
     ScrollingModule,
+    MatDatepickerModule,
+    MatNativeDateModule,
   ],
   providers: [],
   bootstrap: [AppComponent],
