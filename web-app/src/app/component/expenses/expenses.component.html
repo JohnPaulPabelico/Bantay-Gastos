@@ -48,9 +48,11 @@
     </div>
     <div class="total-expenses-container">
       <div class="total-expenses">
-        Total Expenses:<span class="total-expenses-amount">
-          &nbsp;-{{ totalAmount }}</span
+        Total Expenses:
+        <span *ngIf="!isLoading" class="total-expenses-amount"
+          >&nbsp;-{{ totalAmount }}</span
         >
+        <span *ngIf="isLoading">&nbsp; ...</span>
       </div>
     </div>
     <div class="transaction-container">
@@ -61,79 +63,141 @@
               <mat-card-header>
                 <mat-card-title class="title">Add an expense</mat-card-title>
               </mat-card-header>
-              <br />
+
               <mat-card-content>
-                <form #f="ngForm" (ngSubmit)="addExpense(f)">
+                <br />
+              </mat-card-content>
+              <mat-card-content class="content">
+                <form
+                  #expenseForm="ngForm"
+                  (ngSubmit)="addExpense(expenseForm)"
+                >
                   <mat-form-field
                     class="form-field white-backgrounded-field green-bordered-field"
                     appearance="outline"
                   >
                     <mat-label>Title</mat-label>
-                    <input matInput type="text" name="Title" ngModel />
+                    <input matInput type="text" name="Title" ngModel required />
                   </mat-form-field>
                   <mat-form-field
                     class="form-field white-backgrounded-field green-bordered-field"
                     appearance="outline"
                   >
                     <mat-label>Amount</mat-label>
-                    <input matInput type="number" name="Amount" ngModel />
+                    <input
+                      matInput
+                      type="number"
+                      name="Amount"
+                      ngModel
+                      required
+                    />
                   </mat-form-field>
                   <mat-form-field
                     class="form-field white-backgrounded-field green-bordered-field"
                     appearance="outline"
                   >
                     <mat-label>Date</mat-label>
-                    <input matInput type="date" name="date" ngModel />
+                    <input
+                      matInput
+                      [matDatepicker]="picker"
+                      name="date"
+                      ngModel
+                      required
+                      placeholder="MM/DD/YYYY"
+                    />
+                    <mat-hint></mat-hint>
+                    <mat-datepicker-toggle
+                      matIconSuffix
+                      [for]="picker"
+                    ></mat-datepicker-toggle>
+                    <mat-datepicker #picker></mat-datepicker>
                   </mat-form-field>
                   <mat-form-field
                     class="form-field white-backgrounded-field green-bordered-field"
                     appearance="outline"
                   >
                     <mat-label>Description</mat-label>
-                    <textarea matInput name="description" ngModel></textarea>
+                    <textarea
+                      matInput
+                      name="description"
+                      ngModel
+                      required
+                    ></textarea>
                   </mat-form-field>
                   <div class="button-container">
                     <button class="button" type="submit">Add</button>
                   </div>
                 </form>
+                <mat-card-title class="required" *ngIf="!isFilled"
+                  >All fields are required!</mat-card-title
+                >
+                <mat-card-title class="required" *ngIf="isFilled"
+                  >&nbsp;</mat-card-title
+                >
               </mat-card-content>
             </mat-card>
           </div>
         </div>
         <div class="expenses-item-container">
-          <mat-list id="expenses-list" *ngFor="let expense of expenseData">
-            <mat-list-item class="expenses-item">
-              <div class="expenses-item-content">
-                <div>
-                  <div class="expenses-item-title">
-                    {{ expense.title }}
-                  </div>
-                  <div class="expenses-item-details">
-                    <div class="amount">
-                      <mat-icon fontIcon="attach_money"></mat-icon>
-                      <span> -{{ expense.amount }}</span>
-                    </div>
-                    <div class="date">
-                      <mat-icon fontIcon="calendar_today"></mat-icon>
-                      <span> {{ expense.date }}</span>
-                    </div>
-                    <div class="description">
-                      <mat-icon fontIcon="chat_bubble"></mat-icon>
-                      <span> {{ expense.description }}</span>
-                    </div>
+          <div class="loading-container">
+            <img
+              src="https://media.tenor.com/kMCwoAD4RNAAAAAi/loading-gif-loading.gif"
+              height="100"
+              class="logo"
+              *ngIf="isLoading"
+            />
+            <div class="loading-container">
+              <div *ngIf="!isLoading && isEmpty">
+                <span style="font-size: xx-large">Add an expense!</span>
+              </div>
+            </div>
+          </div>
+          <div *ngIf="!isLoading && !isEmpty">
+            <mat-list id="expenses-list" *ngFor="let expense of expenseData">
+              <mat-list-item class="expenses-item">
+                <div class="expenses-item-content">
+                  <div>
                     <div>
-                      <button
-                        class="delete"
-                        (click)="deleteExpense(expense.id)"
+                      <div class="expenses-item-title">
+                        {{ expense.title }}
+                      </div>
+                    </div>
+                    <div style="display: flex; align-items: center">
+                      <div class="expenses-item-details">
+                        <div class="amount">
+                          <mat-icon fontIcon="attach_money"></mat-icon>
+                          <span> -{{ expense.amount }}</span>
+                        </div>
+                        <div class="date">
+                          <mat-icon fontIcon="calendar_today"></mat-icon>
+                          <span>&nbsp; {{ expense.dateString }}</span>
+                        </div>
+                        <div class="description">
+                          <mat-icon fontIcon="chat_bubble"></mat-icon>
+                          <span
+                            >&nbsp;
+                            {{ expense.description | truncate : 10 }}
+                          </span>
+                        </div>
+                      </div>
+                      <div
+                        class="expenses-item-details"
+                        style="margin-left: auto"
                       >
-                        <mat-icon fontIcon="delete"></mat-icon>
-                      </button>
+                        <button
+                          class="delete"
+                          (click)="deleteExpense(expense.id)"
+                        >
+                          <mat-icon fontIcon="delete"></mat-icon
+                          ><span>Delete</span>
+                        </button>
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
-            </mat-list-item>
-          </mat-list>
+              </mat-list-item>
+            </mat-list>
+          </div>
         </div>
       </div>
     </div>

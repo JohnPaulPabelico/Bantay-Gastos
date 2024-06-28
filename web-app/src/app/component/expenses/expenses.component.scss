@@ -133,7 +133,7 @@ a {
   border-radius: 1.5rem;
   box-shadow: 0px 5px 0px 0px rgba(0, 0, 0, 1);
   border: #000000 solid 1px;
-  font-size: xx-large;
+  font-size: x-large;
   font-weight: 700;
 }
 
@@ -158,6 +158,17 @@ a {
   margin-left: 20px;
   max-height: 526px; /* Adjust the max height as needed */
   overflow: auto;
+}
+
+.loading-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+}
+
+.loading-label {
+  font-size: xx-large;
 }
 
 .virtual-scroll-container {
@@ -206,12 +217,12 @@ a {
 }
 
 .expenses-item-details .delete {
-  margin-right: 40px;
+  margin-right: 10px;
   display: flex;
   align-items: center;
   font-size: large;
   outline: 1px solid #000000;
-  background-color: #ff362f;
+  background-color: #ff5954;
   border-radius: 0.5rem;
   padding: 3px;
   cursor: pointer;
@@ -219,9 +230,9 @@ a {
   margin-bottom: 1px;
 }
 
-// .expenses-item-details .delete:hover {
-//   box-shadow: 0px 5px 0px 1px rgba(0, 0, 0, 0.9);
-// }
+.expenses-item-details .delete:hover {
+  background-color: #ff342d;
+}
 
 .transaction-title {
   font-size: x-large;
@@ -247,6 +258,13 @@ a {
   box-shadow: 0px 5px 0px 1px rgba(0, 0, 0, 0.9);
 }
 
+.content {
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  align-items: center;
+}
+
 .expenses-card {
   width: 400px;
   padding: 20px;
@@ -254,6 +272,12 @@ a {
   border-radius: 1.5rem;
   box-shadow: 0px 5px 0px 1px rgba(0, 0, 0, 0.9);
   background: #eee;
+}
+.required {
+  margin-top: 10px;
+  margin-bottom: 10px;
+  color: red;
+  font-size: large;
 }
 
 .form-field {
