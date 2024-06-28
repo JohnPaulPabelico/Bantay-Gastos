@@ -1,8 +1,3 @@
-.toolbar {
-  position: fixed;
-  background-color: #adff2f;
-  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
-}
 .example-container {
   width: auto;
   height: 100%;
@@ -100,17 +95,143 @@ a {
 .logout-button:hover {
   color: rgba(255, 0, 0, 0.534);
 }
+.income-container {
+  display: flex;
+  margin: 40px;
+}
 
-.transaction-container {
+.income-title {
+  font-size: x-large;
+  font-weight: 800;
+}
+
+.welcome-container {
   display: flex;
   align-items: center;
   justify-content: space-between;
   padding: 20px;
   margin: 20px;
+}
+
+.transaction-container {
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+}
+
+.total-income-container {
+  display: flex;
+  justify-content: center;
+}
+
+.total-income {
+  display: flex;
+  align-items: center;
+  padding: 20px;
+  width: 75%;
   background-color: white;
   border-radius: 1.5rem;
   box-shadow: 0px 5px 0px 0px rgba(0, 0, 0, 1);
   border: #000000 solid 1px;
+  font-size: x-large;
+  font-weight: 700;
+}
+
+.total-income-amount {
+  color: #07d400;
+}
+
+.income-panel-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-evenly;
+  padding: 20px;
+  width: 75%;
+  background-color: white;
+  border-radius: 1.5rem;
+  box-shadow: 0px 5px 0px 0px rgba(0, 0, 0, 1);
+  border: #000000 solid 1px;
+}
+
+.income-item-container {
+  width: 100%;
+  margin-left: 20px;
+  max-height: 526px; /* Adjust the max height as needed */
+  overflow: auto;
+}
+
+.loading-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+}
+
+.loading-label {
+  font-size: xx-large;
+}
+
+.virtual-scroll-container {
+  height: 100%;
+  width: 100%;
+}
+
+.income-item {
+  width: 98%;
+  margin-left: 1px;
+  padding: 20px;
+  outline: 1px solid #000000;
+  border-radius: 1.5rem;
+  box-shadow: 0px 5px 0px 1px rgba(0, 0, 0, 0.9);
+  background: #eee;
+  min-height: 96px;
+}
+
+.income-item-title {
+  font-size: x-large;
+  font-weight: 600;
+}
+
+.income-item-details {
+  margin-top: 10px;
+  display: flex;
+}
+
+.income-item-details .amount {
+  margin-right: 40px;
+  display: flex;
+  align-items: center;
+  font-size: large;
+}
+.income-item-details .date {
+  margin-right: 40px;
+  display: flex;
+  align-items: center;
+  font-size: large;
+}
+.income-item-details .description {
+  margin-right: 40px;
+  display: flex;
+  align-items: center;
+  font-size: large;
+}
+
+.income-item-details .delete {
+  margin-right: 10px;
+  display: flex;
+  align-items: center;
+  font-size: large;
+  outline: 1px solid #000000;
+  background-color: #ff5954;
+  border-radius: 0.5rem;
+  padding: 3px;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+  margin-bottom: 1px;
+}
+
+.income-item-details .delete:hover {
+  background-color: #ff342d;
 }
 
 .transaction-title {
@@ -135,4 +256,46 @@ a {
 
 .button:hover {
   box-shadow: 0px 5px 0px 1px rgba(0, 0, 0, 0.9);
+}
+
+.content {
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  align-items: center;
+}
+
+.income-card {
+  width: 400px;
+  padding: 20px;
+  outline: 1px solid #000000;
+  border-radius: 1.5rem;
+  box-shadow: 0px 5px 0px 1px rgba(0, 0, 0, 0.9);
+  background: #eee;
+}
+.required {
+  margin-top: 10px;
+  margin-bottom: 10px;
+  color: red;
+  font-size: large;
+}
+
+.form-field {
+  width: 100%;
+  font-size: large;
+}
+
+.button-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+}
+
+.mat-list-item {
+  align-items: flex-start;
+}
+
+.mat-list-item .mat-list-item-content {
+  align-items: flex-start;
 }

@@ -2,7 +2,7 @@
   <mat-drawer class="drawer" mode="side" opened>
     <img src="assets/gastos.png" height="70" class="logo" />
     <div class="button-group">
-      <a routerLink="/income" class="list-item">
+      <a routerLink="/dashboard" class="list-item">
         <mat-icon
           aria-hidden="false"
           aria-label="Example home icon"
@@ -43,12 +43,161 @@
     </div>
   </mat-drawer>
   <mat-drawer-content>
-    <div class="transaction-container">
-      <div class="transaction-title">All Income</div>
-      <div class="button">Add Income</div>
+    <div class="welcome-container">
+      <div class="transaction-title">Income</div>
+    </div>
+    <div class="total-income-container">
+      <div class="total-income">
+        Total Income:
+        <span *ngIf="!isLoading" class="total-income-amount"
+          >&nbsp;{{ totalAmount }}</span
+        >
+        <span *ngIf="isLoading">&nbsp; ...</span>
+      </div>
     </div>
     <div class="transaction-container">
-      <div class="transaction-title">Total Income:</div>
+      <div class="income-panel-container">
+        <div class="transaction-title">
+          <div>
+            <mat-card class="income-card" appearance="outlined">
+              <mat-card-header>
+                <mat-card-title class="title">Add an Income</mat-card-title>
+              </mat-card-header>
+
+              <mat-card-content>
+                <br />
+              </mat-card-content>
+              <mat-card-content class="content">
+                <form #incomeForm="ngForm" (ngSubmit)="addIncome(incomeForm)">
+                  <mat-form-field
+                    class="form-field white-backgrounded-field green-bordered-field"
+                    appearance="outline"
+                  >
+                    <mat-label>Title</mat-label>
+                    <input matInput type="text" name="Title" ngModel required />
+                  </mat-form-field>
+                  <mat-form-field
+                    class="form-field white-backgrounded-field green-bordered-field"
+                    appearance="outline"
+                  >
+                    <mat-label>Amount</mat-label>
+                    <input
+                      matInput
+                      type="number"
+                      name="Amount"
+                      ngModel
+                      required
+                    />
+                  </mat-form-field>
+                  <mat-form-field
+                    class="form-field white-backgrounded-field green-bordered-field"
+                    appearance="outline"
+                  >
+                    <mat-label>Date</mat-label>
+                    <!-- <input matInput type="date" name="date" ngModel required /> -->
+                    <input
+                      matInput
+                      [matDatepicker]="picker"
+                      name="date"
+                      ngModel
+                      required
+                      placeholder="MM/DD/YYYY"
+                    />
+                    <mat-hint></mat-hint>
+                    <mat-datepicker-toggle
+                      matIconSuffix
+                      [for]="picker"
+                    ></mat-datepicker-toggle>
+                    <mat-datepicker #picker></mat-datepicker>
+                  </mat-form-field>
+                  <mat-form-field
+                    class="form-field white-backgrounded-field green-bordered-field"
+                    appearance="outline"
+                  >
+                    <mat-label>Description</mat-label>
+                    <textarea
+                      matInput
+                      name="description"
+                      ngModel
+                      required
+                    ></textarea>
+                  </mat-form-field>
+                  <div class="button-container">
+                    <button class="button" type="submit">Add</button>
+                  </div>
+                </form>
+                <mat-card-title class="required" *ngIf="!isFilled"
+                  >All fields are required!</mat-card-title
+                >
+                <mat-card-title class="required" *ngIf="isFilled"
+                  >&nbsp;</mat-card-title
+                >
+              </mat-card-content>
+            </mat-card>
+          </div>
+        </div>
+        <div class="income-item-container">
+          <div class="loading-container">
+            <img
+              src="https://media.tenor.com/kMCwoAD4RNAAAAAi/loading-gif-loading.gif"
+              height="100"
+              class="logo"
+              *ngIf="isLoading"
+            />
+          </div>
+          <div class="loading-container">
+            <div *ngIf="!isLoading && isEmpty">
+              <span style="font-size: xx-large">Add an income!</span>
+            </div>
+          </div>
+          <div *ngIf="!isLoading && !isEmpty">
+            <mat-list id="income-list" *ngFor="let income of incomeData">
+              <mat-list-item class="income-item">
+                <div class="income-item-content">
+                  <div>
+                    <div>
+                      <div class="income-item-title">
+                        {{ income.title }}
+                      </div>
+                    </div>
+                    <div style="display: flex; align-items: center">
+                      <div class="income-item-details">
+                        <div class="amount">
+                          <mat-icon fontIcon="attach_money"></mat-icon>
+                          <span> {{ income.amount }}</span>
+                        </div>
+                        <div class="date">
+                          <mat-icon fontIcon="calendar_today"></mat-icon>
+                          <span>&nbsp; {{ income.dateString }}</span>
+                        </div>
+                        <div class="description">
+                          <mat-icon fontIcon="chat_bubble"></mat-icon>
+                          <span
+                            >&nbsp;
+                            {{ income.description | truncate : 20 }}
+                          </span>
+                        </div>
+                      </div>
+                      <div
+                        class="income-item-details"
+                        style="margin-left: auto"
+                      >
+                        <button
+                          class="delete"
+                          (click)="deleteIncome(income.id)"
+                        >
+                          <mat-icon fontIcon="delete"></mat-icon
+                          ><span>Delete</span>
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </mat-list-item>
+            </mat-list>
+          </div>
+        </div>
+      </div>
     </div>
   </mat-drawer-content>
 </mat-drawer-container>
