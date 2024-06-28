@@ -38,7 +38,7 @@ export class AuthService {
   login(email: string, password: string) {
     return this.fireauth.signInWithEmailAndPassword(email, password).then(
       (res) => {
-        localStorage.setItem('token', 'true');
+        localStorage.setItem('token', String(res.user?.uid));
         this.setUserData(res.user);
 
         if (res.user?.emailVerified == true) {
