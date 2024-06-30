@@ -101,19 +101,15 @@ a {
   color: rgba(255, 0, 0, 0.534);
 }
 
-.transaction-container {
+.welcome-container {
   display: flex;
   align-items: center;
   justify-content: space-between;
   padding: 20px;
   margin: 20px;
-  background-color: white;
-  border-radius: 1.5rem;
-  box-shadow: 0px 5px 0px 0px rgba(0, 0, 0, 1);
-  border: #000000 solid 1px;
 }
 
-.transaction-title {
+.dashboard-title {
   font-size: x-large;
   font-weight: 800;
 }
