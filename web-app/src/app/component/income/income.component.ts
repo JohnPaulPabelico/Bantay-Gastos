@@ -124,7 +124,7 @@ export class IncomeComponent {
 
   deleteIncome(id: string) {
     this.firestore
-      .collection('incomes')
+      .collection('income')
       .doc(id)
       .delete()
       .then(() => {
