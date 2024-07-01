@@ -47,14 +47,8 @@ export class ExpensesComponent {
     }
 
     const dateInt = new Date(form.value.date).getTime();
+    const date = new Date(form.value.date);
 
-    const firestoreTimestamp: Timestamp = Timestamp.fromDate(form.value.date);
-    console.log('Firestore Timestamp:', firestoreTimestamp);
-    const firestoreTimestampString = firestoreTimestamp.toDate().toString();
-
-    const date = new Date(firestoreTimestampString);
-
-    // Step 2: Format the date into "MMM DD YYYY" format
     const formattedDate = date.toLocaleDateString('en-US', {
       month: 'short',
       day: '2-digit',
@@ -91,8 +85,6 @@ export class ExpensesComponent {
       .then((docRef) => {
         // Update the document with the generated ID
         expensesData.id = docRef.id;
-
-        // Update the document in Firestore with the generated ID
         form.reset();
       })
       .catch((error) => {

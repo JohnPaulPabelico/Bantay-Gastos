@@ -47,14 +47,8 @@ export class IncomeComponent {
     }
 
     const dateInt = new Date(form.value.date).getTime();
+    const date = new Date(form.value.date);
 
-    const firestoreTimestamp: Timestamp = Timestamp.fromDate(form.value.date);
-    console.log('Firestore Timestamp:', firestoreTimestamp);
-    const firestoreTimestampString = firestoreTimestamp.toDate().toString();
-
-    const date = new Date(firestoreTimestampString);
-
-    // Step 2: Format the date into "MMM DD YYYY" format
     const formattedDate = date.toLocaleDateString('en-US', {
       month: 'short',
       day: '2-digit',
