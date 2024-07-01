@@ -54,7 +54,7 @@
       <div class="total-income">
         Total Income:
         <span *ngIf="!isLoading" class="total-income-amount"
-          >&nbsp;{{ totalAmount }}</span
+          >&nbsp;{{ totalAmount | number : "1.0" : "en-US" }}</span
         >
         <span *ngIf="isLoading">&nbsp; ...</span>
       </div>
@@ -168,7 +168,9 @@
                       <div class="income-item-details">
                         <div class="amount">
                           <mat-icon fontIcon="attach_money"></mat-icon>
-                          <span> {{ income.amount }}</span>
+                          <span>
+                            {{ income.amount | number : "1.0" : "en-US" }}</span
+                          >
                         </div>
                         <div class="date">
                           <mat-icon fontIcon="calendar_today"></mat-icon>

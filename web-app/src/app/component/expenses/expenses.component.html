@@ -54,7 +54,7 @@
       <div class="total-expenses">
         Total Expenses:
         <span *ngIf="!isLoading" class="total-expenses-amount"
-          >&nbsp;-{{ totalAmount }}</span
+          >&nbsp;-{{ totalAmount | number : "1.0" : "en-US" }}</span
         >
         <span *ngIf="isLoading">&nbsp; ...</span>
       </div>
@@ -170,7 +170,11 @@
                       <div class="expenses-item-details">
                         <div class="amount">
                           <mat-icon fontIcon="attach_money"></mat-icon>
-                          <span> -{{ expense.amount }}</span>
+                          <span>
+                            -{{
+                              expense.amount | number : "1.0" : "en-US"
+                            }}</span
+                          >
                         </div>
                         <div class="date">
                           <mat-icon fontIcon="calendar_today"></mat-icon>
