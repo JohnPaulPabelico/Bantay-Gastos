@@ -129,6 +129,63 @@ a {
   transition: all 0.2s ease-in-out;
 }
 
+.dashboard-container {
+  display: flex;
+  flex-direction: column;
+}
+
+.finance-container {
+  display: flex;
+  justify-content: center;
+}
+
+.finance-panels-container {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  width: 75%;
+}
+
+.panel-container {
+  display: flex;
+  align-items: center;
+  padding: 20px;
+  width: 35%;
+  background-color: white;
+  border-radius: 1.5rem;
+  box-shadow: 0px 5px 0px 0px rgba(0, 0, 0, 1);
+  border: #000000 solid 1px;
+  font-size: x-large;
+  font-weight: 700;
+}
+
+.balance {
+  color: rgb(0, 209, 0);
+}
+
+.income-expense {
+  color: rgb(122, 122, 122);
+}
+
+.analysis-container {
+  display: flex;
+  justify-content: center;
+  margin: 25px;
+}
+
+.chart-container {
+  display: flex;
+  align-items: center;
+  padding: 20px;
+  width: 75%;
+  background-color: white;
+  border-radius: 1.5rem;
+  box-shadow: 0px 5px 0px 0px rgba(0, 0, 0, 1);
+  border: #000000 solid 1px;
+  font-size: x-large;
+  font-weight: 700;
+}
+
 .button:hover {
   box-shadow: 0px 5px 0px 1px rgba(0, 0, 0, 0.9);
 }
