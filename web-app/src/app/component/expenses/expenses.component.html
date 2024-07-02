@@ -1,10 +1,6 @@
 <mat-drawer-container class="example-container">
   <mat-drawer class="drawer" mode="side" opened>
-    <img
-      src="assets/gastos.png"
-      height="70"
-      class="logo"
-    />
+    <img src="assets/gastos.png" height="70" class="logo" />
     <div class="button-group">
       <a routerLink="/dashboard" class="list-item">
         <mat-icon
@@ -120,6 +116,20 @@
                     class="form-field white-backgrounded-field green-bordered-field"
                     appearance="outline"
                   >
+                    <mat-label>Category</mat-label>
+                    <mat-select [(ngModel)]="selectedValue" name="category">
+                      <mat-option
+                        *ngFor="let category of categories"
+                        [value]="category.value"
+                      >
+                        {{ category.viewValue }}
+                      </mat-option>
+                    </mat-select>
+                  </mat-form-field>
+                  <mat-form-field
+                    class="form-field white-backgrounded-field green-bordered-field"
+                    appearance="outline"
+                  >
                     <mat-label>Description</mat-label>
                     <textarea
                       matInput
@@ -161,9 +171,21 @@
               <mat-list-item class="expenses-item">
                 <div class="expenses-item-content">
                   <div>
-                    <div>
+                    <div class="expenses-item-title-container">
+                      <span class="category">{{ expense.category }}</span>
                       <div class="expenses-item-title">
-                        {{ expense.title }}
+                        <span>{{ expense.title }}</span>
+                      </div>
+                      <div
+                        class="expenses-item-details"
+                        style="margin-left: auto"
+                      >
+                        <button
+                          class="delete"
+                          (click)="deleteExpense(expense.id || '')"
+                        >
+                          <mat-icon fontIcon="delete"></mat-icon>
+                        </button>
                       </div>
                     </div>
                     <div style="display: flex; align-items: center">
@@ -184,21 +206,9 @@
                           <mat-icon fontIcon="chat_bubble"></mat-icon>
                           <span
                             >&nbsp;
-                            {{ expense.description | truncate : 10 }}
+                            {{ expense.description | truncate : 20 }}
                           </span>
                         </div>
-                      </div>
-                      <div
-                        class="expenses-item-details"
-                        style="margin-left: auto"
-                      >
-                        <button
-                          class="delete"
-                          (click)="deleteExpense(expense.id)"
-                        >
-                          <mat-icon fontIcon="delete"></mat-icon
-                          ><span>Delete</span>
-                        </button>
                       </div>
                     </div>
                   </div>
