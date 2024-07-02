@@ -23,7 +23,7 @@ import { ForgotPasswordEmailComponent } from './forgot-password-email/forgot-pas
 import { MatListModule } from '@angular/material/list';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
-
+import { MatSelectModule } from '@angular/material/select';
 import { AngularFireAuthModule } from '@angular/fire/compat/auth';
 import { AngularFirestoreModule } from '@angular/fire/compat/firestore';
 import { AngularFireModule } from '@angular/fire/compat';
@@ -64,6 +64,7 @@ import { getAuth, provideAuth } from '@angular/fire/auth';
     ScrollingModule,
     MatDatepickerModule,
     MatNativeDateModule,
+    MatSelectModule,
     provideAuth(() => getAuth()),
   ],
   providers: [],
