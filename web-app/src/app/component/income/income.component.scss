@@ -100,9 +100,24 @@ a {
   margin: 40px;
 }
 
+.income-item-title-container {
+  display: flex;
+  align-items: center;
+}
+
 .income-title {
   font-size: x-large;
   font-weight: 800;
+}
+
+.category {
+  font-size: medium;
+  font-weight: 500;
+  background-color: #9cffb1;
+  outline: 1px solid #000000;
+  padding: 2px;
+  border-radius: 0.5rem;
+  margin: 10px;
 }
 
 .welcome-container {
