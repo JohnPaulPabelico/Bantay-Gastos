@@ -29,6 +29,7 @@ import { AngularFirestoreModule } from '@angular/fire/compat/firestore';
 import { AngularFireModule } from '@angular/fire/compat';
 import { ScrollingModule } from '@angular/cdk/scrolling';
 import { TruncatePipe } from './truncate.pipe';
+import { getAuth, provideAuth } from '@angular/fire/auth';
 
 @NgModule({
   declarations: [
@@ -47,6 +48,7 @@ import { TruncatePipe } from './truncate.pipe';
     BrowserModule,
     AppRoutingModule,
     AngularFireModule.initializeApp(environment.firebase),
+
     AngularFirestoreModule,
     AngularFireAuthModule,
     BrowserAnimationsModule,
@@ -62,6 +64,7 @@ import { TruncatePipe } from './truncate.pipe';
     ScrollingModule,
     MatDatepickerModule,
     MatNativeDateModule,
+    provideAuth(() => getAuth()),
   ],
   providers: [],
   bootstrap: [AppComponent],
