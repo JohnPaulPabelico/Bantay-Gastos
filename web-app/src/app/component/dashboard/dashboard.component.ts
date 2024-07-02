@@ -1,9 +1,8 @@
 import { Component } from '@angular/core';
-import { AngularFireAuth } from '@angular/fire/compat/auth';
 import { AuthService } from 'src/app/shared/auth.service';
 import { ExpenseService } from 'src/app/shared/expense.service';
 import { IncomeService } from 'src/app/shared/income.service';
-import { combineLatest, forkJoin, merge, tap } from 'rxjs';
+import { combineLatest } from 'rxjs';
 import { Chart, registerables } from 'chart.js';
 import { groupBy } from 'lodash';
 Chart.register(...registerables);
@@ -16,7 +15,7 @@ Chart.register(...registerables);
 export class DashboardComponent {
   expenseData: any[] = [];
   incomeData: any[] = [];
-  uid: string | null = null;
+  uid: string | undefined;
   totalExpenses: number = 0;
   totalIncome: number = 0;
   totalBalance: number = 0;
@@ -26,9 +25,22 @@ export class DashboardComponent {
   constructor(
     private auth: AuthService,
     private expenseService: ExpenseService,
-    private incomeService: IncomeService,
-    private fireAuth: AngularFireAuth
+    private incomeService: IncomeService
   ) {}
+
+  async ngOnInit(): Promise<void> {
+    this.uid = this.auth.getUserId();
+    console.log('User ID: ' + this.uid);
+    if (!this.uid) {
+      console.error('Not currently signed in');
+      return;
+    }
+    this.getExpenseIncome();
+  }
+
+  logout() {
+    this.auth.logout();
+  }
 
   calculateTotal() {
     this.totalExpenses = this.expenseData.reduce(
@@ -52,9 +64,8 @@ export class DashboardComponent {
 
   getExpenseIncome() {
     this.isLoading = true;
-    console.log('User ID: ' + this.uid);
     if (!this.uid) {
-      console.error('Not currently signed ins');
+      console.error('Cannot get expenses or income, not currently signed in');
       return;
     }
 
@@ -163,20 +174,6 @@ export class DashboardComponent {
     // });
   }
 
-  async getUserId() {
-    try {
-      const user = await this.fireAuth.currentUser;
-      if (user) {
-        this.uid = user.uid;
-        console.log('User ID: ' + this.uid);
-      } else {
-        console.log('No user is currently signed in.');
-      }
-    } catch (error) {
-      console.error('Error getting current user: ', error);
-    }
-  }
-
   RenderChart(
     monthlyExpenseTotals: { monthYear: string; totalAmount: number }[],
     monthlyIncomeTotals: { monthYear: string; totalAmount: number }[]
@@ -214,16 +211,5 @@ export class DashboardComponent {
         },
       },
     });
-  }
-
-  async ngOnInit(): Promise<void> {
-    await this.getUserId();
-    this.getExpenseIncome();
-
-    // this.isFilled = true;
-  }
-
-  logout() {
-    this.auth.logout();
   }
 }

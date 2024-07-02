@@ -24,12 +24,33 @@ export class IncomeComponent {
 
   incomeData: any[] = [];
   totalAmount: number = 0; // Initialize totalAmount
-  uid: string | null = null;
+  uid: string | undefined;
 
   private unsubscribe$ = new Subject<void>();
   isLoading = false;
   isFilled = false;
   isEmpty = false;
+
+  ngOnInit() {
+    this.uid = this.auth.getUserId();
+    console.log('User ID: ' + this.uid);
+    if (!this.uid) {
+      console.error('Not currently signed in');
+      return;
+    }
+    this.isFilled = true;
+    this.getIncome();
+  }
+
+  ngOnDestroy(): void {
+    console.log('DashboardComponent destroyed');
+    this.unsubscribe$.next();
+    this.unsubscribe$.complete();
+  }
+
+  logout() {
+    this.auth.logout();
+  }
 
   calculateTotalAmount() {
     this.totalAmount = this.incomeData.reduce(
@@ -40,9 +61,8 @@ export class IncomeComponent {
 
   addIncome(form: NgForm) {
     this.isFilled = false;
-    console.log('current UID:', this.uid);
     if (!this.uid) {
-      console.error('Not currently signed in');
+      console.error('Cannot add income, user ID not found');
       return;
     }
 
@@ -96,9 +116,8 @@ export class IncomeComponent {
 
   getIncome() {
     this.isLoading = true;
-    console.log('User ID: ' + this.uid);
     if (!this.uid) {
-      console.error('Not currently signed ins');
+      console.error('Cannot get income, user ID not found');
       return;
     }
 
@@ -133,35 +152,5 @@ export class IncomeComponent {
       .catch((error) => {
         console.error('Error removing document: ', error);
       });
-  }
-
-  async getUserId() {
-    try {
-      const user = await this.fireAuth.currentUser;
-      if (user) {
-        this.uid = user.uid;
-        console.log('User ID: ' + this.uid);
-      } else {
-        console.log('No user is currently signed in.');
-      }
-    } catch (error) {
-      console.error('Error getting current user: ', error);
-    }
-  }
-
-  async ngOnInit(): Promise<void> {
-    await this.getUserId();
-    this.isFilled = true;
-    this.getIncome();
-  }
-
-  ngOnDestroy(): void {
-    console.log('DashboardComponent destroyed');
-    this.unsubscribe$.next();
-    this.unsubscribe$.complete();
-  }
-
-  logout() {
-    this.auth.logout();
   }
 }

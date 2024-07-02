@@ -4,9 +4,6 @@ import { ExpenseService } from 'src/app/shared/expense.service';
 import { Subject, takeUntil, tap, timestamp } from 'rxjs';
 import { NgForm } from '@angular/forms';
 import { AngularFirestore } from '@angular/fire/compat/firestore';
-import { AngularFireAuth } from '@angular/fire/compat/auth';
-import firebase from 'firebase/compat/app';
-import { Timestamp } from 'firebase/firestore';
 
 @Component({
   selector: 'app-expenses',
@@ -18,18 +15,38 @@ export class ExpensesComponent {
   constructor(
     private auth: AuthService,
     private expenseService: ExpenseService,
-    private fireAuth: AngularFireAuth,
     private firestore: AngularFirestore
   ) {}
 
   expenseData: any[] = [];
-  totalAmount: number = 0; // Initialize totalAmount
-  uid: string | null = null;
+  totalAmount: number = 0;
+  uid: string | undefined;
 
   private unsubscribe$ = new Subject<void>();
   isLoading = false;
   isFilled = false;
   isEmpty = false;
+
+  ngOnInit() {
+    this.uid = this.auth.getUserId();
+    console.log('User ID: ' + this.uid);
+    if (!this.uid) {
+      console.error('Not currently signed in');
+      return;
+    }
+    this.isFilled = true;
+    this.getExpense();
+  }
+
+  ngOnDestroy(): void {
+    console.log('DashboardComponent destroyed');
+    this.unsubscribe$.next();
+    this.unsubscribe$.complete();
+  }
+
+  logout() {
+    this.auth.logout();
+  }
 
   calculateTotalAmount() {
     this.totalAmount = this.expenseData.reduce(
@@ -40,9 +57,8 @@ export class ExpensesComponent {
 
   addExpense(form: NgForm) {
     this.isFilled = false;
-    console.log('current UID:', this.uid);
     if (!this.uid) {
-      console.error('Not currently signed in');
+      console.error('Cannot add expense, user ID not found');
       return;
     }
 
@@ -94,9 +110,8 @@ export class ExpensesComponent {
 
   getExpense() {
     this.isLoading = true;
-    console.log('User ID: ' + this.uid);
     if (!this.uid) {
-      console.error('Not currently signed ins');
+      console.error('Cannot get expenses, user ID not found');
       return;
     }
 
@@ -131,35 +146,5 @@ export class ExpensesComponent {
       .catch((error) => {
         console.error('Error removing document: ', error);
       });
-  }
-
-  async getUserId() {
-    try {
-      const user = await this.fireAuth.currentUser;
-      if (user) {
-        this.uid = user.uid;
-        console.log('User ID: ' + this.uid);
-      } else {
-        console.log('No user is currently signed in.');
-      }
-    } catch (error) {
-      console.error('Error getting current user: ', error);
-    }
-  }
-
-  async ngOnInit(): Promise<void> {
-    await this.getUserId();
-    this.isFilled = true;
-    this.getExpense();
-  }
-
-  ngOnDestroy(): void {
-    console.log('DashboardComponent destroyed');
-    this.unsubscribe$.next();
-    this.unsubscribe$.complete();
-  }
-
-  logout() {
-    this.auth.logout();
   }
 }

@@ -16,11 +16,25 @@ import { User } from '../model/users';
   providedIn: 'root',
 })
 export class AuthService {
+  userId: string | undefined;
   constructor(
     private fireauth: AngularFireAuth,
     private router: Router,
     private firestore: AngularFirestore
-  ) {}
+  ) {
+    // Subscribe to auth state changes
+    this.fireauth.onAuthStateChanged((user) => {
+      if (user) {
+        this.userId = user.uid;
+      } else {
+        this.userId = undefined;
+      }
+    });
+  }
+
+  getUserId(): string | undefined {
+    return this.userId;
+  }
 
   setUserData(user: any) {
     const userRef: AngularFirestoreDocument<any> = this.firestore.doc(
