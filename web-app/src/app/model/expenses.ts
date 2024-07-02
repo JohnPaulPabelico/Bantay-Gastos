@@ -1,8 +1,11 @@
 export type Expenses = {
   id?: string;
-  createdById: string;
   title: string;
   amount: number;
-  description: string;
+  dateString: string;
+  category: string;
+  dateInt: number;
   date: Date;
+  description: string;
+  createdById: string;
 };
