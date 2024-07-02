@@ -4,6 +4,7 @@ import { ExpenseService } from 'src/app/shared/expense.service';
 import { Subject, takeUntil, tap, timestamp } from 'rxjs';
 import { NgForm } from '@angular/forms';
 import { AngularFirestore } from '@angular/fire/compat/firestore';
+import { Expenses } from 'src/app/model/expenses';
 
 @Component({
   selector: 'app-expenses',
@@ -18,7 +19,7 @@ export class ExpensesComponent {
     private firestore: AngularFirestore
   ) {}
 
-  expenseData: any[] = [];
+  expenseData: Expenses[] = [];
   totalAmount: number = 0;
   uid: string | undefined;
 
@@ -26,6 +27,16 @@ export class ExpensesComponent {
   isLoading = false;
   isFilled = false;
   isEmpty = false;
+
+  selectedValue: string = '';
+  categories = [
+    { value: 'Food', viewValue: 'Food' },
+    { value: 'Entertainment', viewValue: 'Entertainment' },
+    { value: 'Grocery', viewValue: 'Grocery' },
+    { value: 'Shopping', viewValue: 'Shopping' },
+    { value: 'Bills', viewValue: 'Bills' },
+    { value: 'Transportation', viewValue: 'Transportation' },
+  ];
 
   ngOnInit() {
     this.uid = this.auth.getUserId();
@@ -73,10 +84,11 @@ export class ExpensesComponent {
 
     console.log(formattedDate); // Output: "Jun 06, 2024"
 
-    const expensesData: any = {
+    const expensesData: Expenses = {
       title: form.value.Title,
       amount: form.value.Amount,
       dateString: formattedDate,
+      category: this.selectedValue,
       dateInt: dateInt,
       date: date,
       description: form.value.description,
@@ -87,7 +99,8 @@ export class ExpensesComponent {
       !expensesData.title ||
       !expensesData.amount ||
       !expensesData.date ||
-      !expensesData.description
+      !expensesData.description ||
+      !expensesData.category
     ) {
       this.isFilled = false;
       console.error('All fields are required');
@@ -136,12 +149,22 @@ export class ExpensesComponent {
   }
 
   deleteExpense(id: string) {
+    if (!id) {
+      console.error('Cannot delete expense without ID');
+      return;
+    }
+
     this.firestore
       .collection('expenses')
       .doc(id)
       .delete()
       .then(() => {
         console.log('Document successfully deleted!');
+        // Remove from local array
+        this.expenseData = this.expenseData.filter(
+          (expense) => expense.id !== id
+        );
+        this.calculateTotalAmount(); // Recalculate total amount
       })
       .catch((error) => {
         console.error('Error removing document: ', error);

@@ -4,9 +4,7 @@ import { IncomeService } from 'src/app/shared/income.service';
 import { Subject, takeUntil, tap, timestamp } from 'rxjs';
 import { NgForm } from '@angular/forms';
 import { AngularFirestore } from '@angular/fire/compat/firestore';
-import { AngularFireAuth } from '@angular/fire/compat/auth';
-import firebase from 'firebase/compat/app';
-import { Timestamp } from 'firebase/firestore';
+import { Income } from 'src/app/model/income';
 
 @Component({
   selector: 'app-income',
@@ -18,11 +16,10 @@ export class IncomeComponent {
   constructor(
     private auth: AuthService,
     private incomeService: IncomeService,
-    private fireAuth: AngularFireAuth,
     private firestore: AngularFirestore
   ) {}
 
-  incomeData: any[] = [];
+  incomeData: Income[] = [];
   totalAmount: number = 0; // Initialize totalAmount
   uid: string | undefined;
 
@@ -30,6 +27,15 @@ export class IncomeComponent {
   isLoading = false;
   isFilled = false;
   isEmpty = false;
+
+  selectedValue: string = '';
+  categories = [
+    { value: 'Salary', viewValue: 'Salary' },
+    { value: 'Cryptocurrency', viewValue: 'Cryptocurrency' },
+    { value: 'Allowance', viewValue: 'Allowance' },
+    { value: 'Business', viewValue: 'Business' },
+    { value: 'Gifts', viewValue: 'Gifts' },
+  ];
 
   ngOnInit() {
     this.uid = this.auth.getUserId();
@@ -81,6 +87,7 @@ export class IncomeComponent {
       title: form.value.Title,
       amount: form.value.Amount,
       dateString: formattedDate,
+      category: this.selectedValue,
       dateInt: dateInt,
       date: date,
       description: form.value.description,
@@ -91,7 +98,8 @@ export class IncomeComponent {
       !incomeData.title ||
       !incomeData.amount ||
       !incomeData.date ||
-      !incomeData.description
+      !incomeData.description ||
+      !incomeData.category
     ) {
       this.isFilled = false;
       console.error('All fields are required');
@@ -142,12 +150,18 @@ export class IncomeComponent {
   }
 
   deleteIncome(id: string) {
+    if (!id) {
+      console.error('Cannot delete expense without ID');
+      return;
+    }
+
     this.firestore
       .collection('income')
       .doc(id)
       .delete()
       .then(() => {
         console.log('Document successfully deleted!');
+        this.incomeData = this.incomeData.filter((income) => income.id !== id);
       })
       .catch((error) => {
         console.error('Error removing document: ', error);
