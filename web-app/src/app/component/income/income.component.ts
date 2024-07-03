@@ -5,6 +5,8 @@ import { Subject, takeUntil, tap, timestamp } from 'rxjs';
 import { NgForm } from '@angular/forms';
 import { AngularFirestore } from '@angular/fire/compat/firestore';
 import { Income } from 'src/app/model/income';
+import Swal from 'sweetalert2';
+import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 
 @Component({
   selector: 'app-income',
@@ -16,9 +18,12 @@ export class IncomeComponent {
   constructor(
     private auth: AuthService,
     private incomeService: IncomeService,
-    private firestore: AngularFirestore
+    private firestore: AngularFirestore,
+    private breakpointObserver: BreakpointObserver
   ) {}
 
+  isSmallScreen = false; // default value
+  sideNavMode: 'over' | 'side' = 'side';
   incomeData: Income[] = [];
   totalAmount: number = 0; // Initialize totalAmount
   uid: string | undefined;
@@ -44,6 +49,14 @@ export class IncomeComponent {
       console.error('Not currently signed in');
       return;
     }
+
+    this.breakpointObserver
+      .observe([Breakpoints.Small, Breakpoints.Handset])
+      .subscribe((result) => {
+        this.isSmallScreen = result.matches;
+        this.sideNavMode = result.matches ? 'over' : 'side';
+      });
+
     this.isFilled = true;
     this.getIncome();
   }
@@ -155,16 +168,44 @@ export class IncomeComponent {
       return;
     }
 
-    this.firestore
-      .collection('income')
-      .doc(id)
-      .delete()
-      .then(() => {
-        console.log('Document successfully deleted!');
-        this.incomeData = this.incomeData.filter((income) => income.id !== id);
-      })
-      .catch((error) => {
-        console.error('Error removing document: ', error);
-      });
+    Swal.fire({
+      title: 'Are you sure?',
+      text: 'You will not be able to revert this!',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Yes, remove it!',
+      backdrop: false,
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.firestore
+          .collection('income')
+          .doc(id)
+          .delete()
+          .then(() => {
+            console.log('Document successfully deleted!');
+            this.incomeData = this.incomeData.filter(
+              (income) => income.id !== id
+            );
+          })
+          .catch((error) => {
+            console.error('Error removing document: ', error);
+          });
+        Swal.fire({
+          title: 'Income deleted!',
+          icon: 'success',
+          showConfirmButton: false,
+          toast: true,
+          position: 'top-end',
+          timer: 3000,
+          timerProgressBar: true,
+          didOpen: (toast) => {
+            toast.addEventListener('mouseenter', Swal.stopTimer);
+            toast.addEventListener('mouseleave', Swal.resumeTimer);
+          },
+        });
+      }
+    });
   }
 }

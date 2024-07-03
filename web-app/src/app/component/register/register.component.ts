@@ -9,6 +9,7 @@ import { AuthService } from 'src/app/shared/auth.service';
 export class RegisterComponent {
   email: string = '';
   password: string = '';
+  isFilled = true;
 
   constructor(private auth: AuthService) {}
 
@@ -16,12 +17,13 @@ export class RegisterComponent {
 
   register() {
     if (this.email == '') {
-      alert('Please enter email');
+      this.isFilled = false;
       return;
     }
 
     if (this.password == '') {
       alert('Please enter password');
+      this.isFilled = false;
       return;
     }
 

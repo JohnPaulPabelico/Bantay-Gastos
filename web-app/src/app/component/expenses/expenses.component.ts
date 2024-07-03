@@ -1,10 +1,12 @@
-import { Component, ViewChild } from '@angular/core';
+import { Component, ViewChild, OnInit } from '@angular/core';
 import { AuthService } from 'src/app/shared/auth.service';
 import { ExpenseService } from 'src/app/shared/expense.service';
 import { Subject, takeUntil, tap, timestamp } from 'rxjs';
 import { NgForm } from '@angular/forms';
 import { AngularFirestore } from '@angular/fire/compat/firestore';
 import { Expenses } from 'src/app/model/expenses';
+import Swal from 'sweetalert2';
+import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 
 @Component({
   selector: 'app-expenses',
@@ -16,9 +18,12 @@ export class ExpensesComponent {
   constructor(
     private auth: AuthService,
     private expenseService: ExpenseService,
-    private firestore: AngularFirestore
+    private firestore: AngularFirestore,
+    private breakpointObserver: BreakpointObserver
   ) {}
 
+  isSmallScreen = false; // default value
+  sideNavMode: 'over' | 'side' = 'side';
   expenseData: Expenses[] = [];
   totalAmount: number = 0;
   uid: string | undefined;
@@ -45,6 +50,14 @@ export class ExpensesComponent {
       console.error('Not currently signed in');
       return;
     }
+
+    this.breakpointObserver
+      .observe([Breakpoints.Small, Breakpoints.Handset])
+      .subscribe((result) => {
+        this.isSmallScreen = result.matches;
+        this.sideNavMode = result.matches ? 'over' : 'side';
+      });
+
     this.isFilled = true;
     this.getExpense();
   }
@@ -154,20 +167,46 @@ export class ExpensesComponent {
       return;
     }
 
-    this.firestore
-      .collection('expenses')
-      .doc(id)
-      .delete()
-      .then(() => {
-        console.log('Document successfully deleted!');
-        // Remove from local array
-        this.expenseData = this.expenseData.filter(
-          (expense) => expense.id !== id
-        );
-        this.calculateTotalAmount(); // Recalculate total amount
-      })
-      .catch((error) => {
-        console.error('Error removing document: ', error);
-      });
+    Swal.fire({
+      title: 'Are you sure?',
+      text: 'You will not be able to revert this!',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Yes, remove it!',
+      backdrop: false,
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.firestore
+          .collection('expenses')
+          .doc(id)
+          .delete()
+          .then(() => {
+            console.log('Document successfully deleted!');
+            // Remove from local array
+            this.expenseData = this.expenseData.filter(
+              (expense) => expense.id !== id
+            );
+            this.calculateTotalAmount(); // Recalculate total amount
+          })
+          .catch((error) => {
+            console.error('Error removing document: ', error);
+          });
+        Swal.fire({
+          title: 'Expense deleted!',
+          icon: 'success',
+          showConfirmButton: false,
+          toast: true,
+          position: 'top-end',
+          timer: 3000,
+          timerProgressBar: true,
+          didOpen: (toast) => {
+            toast.addEventListener('mouseenter', Swal.stopTimer);
+            toast.addEventListener('mouseleave', Swal.resumeTimer);
+          },
+        });
+      }
+    });
   }
 }

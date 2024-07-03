@@ -6,6 +6,7 @@ import { combineLatest } from 'rxjs';
 import { Chart, registerables } from 'chart.js';
 import { groupBy } from 'lodash';
 Chart.register(...registerables);
+import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 
 @Component({
   selector: 'app-dashboard',
@@ -20,21 +21,33 @@ export class DashboardComponent {
   totalIncome: number = 0;
   totalBalance: number = 0;
 
+  isSmallScreen = false; // default value
+  sideNavMode: 'over' | 'side' = 'side';
+
   isLoading = true;
 
   constructor(
     private auth: AuthService,
     private expenseService: ExpenseService,
-    private incomeService: IncomeService
+    private incomeService: IncomeService,
+    private breakpointObserver: BreakpointObserver
   ) {}
 
-  async ngOnInit(): Promise<void> {
+  ngOnInit() {
     this.uid = this.auth.getUserId();
     console.log('User ID: ' + this.uid);
     if (!this.uid) {
       console.error('Not currently signed in');
       return;
     }
+    
+    this.breakpointObserver
+      .observe([Breakpoints.Small, Breakpoints.Handset])
+      .subscribe((result) => {
+        this.isSmallScreen = result.matches;
+        this.sideNavMode = result.matches ? 'over' : 'side';
+      });
+
     this.getExpenseIncome();
   }
 
