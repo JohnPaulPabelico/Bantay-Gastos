@@ -61,8 +61,8 @@ export class AuthService {
       },
 
       (err) => {
-        alert('Something went wrong: ' + err.message);
         this.router.navigate(['/login']);
+        throw err;
       }
     );
   }
