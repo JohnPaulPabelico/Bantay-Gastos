@@ -1,11 +1,7 @@
 import { Injectable } from '@angular/core';
 import { AngularFireAuth } from '@angular/fire/compat/auth';
 import { Router } from '@angular/router';
-import {
-  GoogleAuthProvider,
-  GithubAuthProvider,
-  FacebookAuthProvider,
-} from '@angular/fire/auth';
+import { GoogleAuthProvider } from '@angular/fire/auth';
 import {
   AngularFirestore,
   AngularFirestoreDocument,
@@ -30,6 +26,8 @@ export class AuthService {
         this.userId = undefined;
       }
     });
+
+    // Connect to Firebase Emulator if in development environment
   }
 
   getUserId(): string | undefined {
