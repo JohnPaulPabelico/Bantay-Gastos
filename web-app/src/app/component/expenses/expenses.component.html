@@ -1,6 +1,26 @@
-<mat-drawer-container class="example-container">
-  <mat-drawer class="drawer" mode="side" opened>
-    <img src="assets/gastos.png" height="70" class="logo" />
+<mat-drawer-container class="example-container" [hasBackdrop]="isSmallScreen">
+  <mat-drawer
+    #drawer
+    class="drawer"
+    [mode]="sideNavMode"
+    [opened]="!isSmallScreen"
+  >
+    <div
+      style="display: flex; align-items: center; justify-content: space-between"
+    >
+      <img src="assets/gastos.png" height="70" class="logo" />
+      <div>
+        <button
+          mat-icon-button
+          class="menu-button"
+          style="margin-right: 20px; margin-top: 20px"
+          (click)="drawer.toggle()"
+        >
+          <mat-icon>close</mat-icon>
+        </button>
+      </div>
+    </div>
+
     <div class="button-group">
       <a routerLink="/dashboard" class="list-item">
         <mat-icon
@@ -44,6 +64,11 @@
   </mat-drawer>
   <mat-drawer-content>
     <div class="welcome-container">
+      <div>
+        <button mat-icon-button class="menu-button" (click)="drawer.toggle()">
+          <mat-icon>menu</mat-icon>
+        </button>
+      </div>
       <div class="transaction-title">Expenses</div>
     </div>
     <div class="total-expenses-container">

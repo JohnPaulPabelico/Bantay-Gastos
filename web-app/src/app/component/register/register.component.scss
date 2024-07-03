@@ -98,3 +98,15 @@ a {
   .mdc-notched-outline__trailing {
   border-color: rgb(0, 165, 0);
 }
+.incorrect-alert-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 10px;
+}
+
+.incorrect-alert {
+  color: red;
+  font-size: large;
+  font-weight: 800;
+}
