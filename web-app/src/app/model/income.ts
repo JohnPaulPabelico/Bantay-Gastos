@@ -1,7 +1,11 @@
 export type Income = {
-  id: string;
+  id?: string;
   title: string;
   amount: number;
-  description: string;
+  dateString: string;
+  category: string;
+  dateInt: number;
   date: Date;
+  description: string;
+  createdById: string;
 };

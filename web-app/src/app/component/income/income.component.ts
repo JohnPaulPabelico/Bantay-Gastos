@@ -4,9 +4,7 @@ import { IncomeService } from 'src/app/shared/income.service';
 import { Subject, takeUntil, tap, timestamp } from 'rxjs';
 import { NgForm } from '@angular/forms';
 import { AngularFirestore } from '@angular/fire/compat/firestore';
-import { AngularFireAuth } from '@angular/fire/compat/auth';
-import firebase from 'firebase/compat/app';
-import { Timestamp } from 'firebase/firestore';
+import { Income } from 'src/app/model/income';
 
 @Component({
   selector: 'app-income',
@@ -18,18 +16,47 @@ export class IncomeComponent {
   constructor(
     private auth: AuthService,
     private incomeService: IncomeService,
-    private fireAuth: AngularFireAuth,
     private firestore: AngularFirestore
   ) {}
 
-  incomeData: any[] = [];
+  incomeData: Income[] = [];
   totalAmount: number = 0; // Initialize totalAmount
-  uid: string | null = null;
+  uid: string | undefined;
 
   private unsubscribe$ = new Subject<void>();
   isLoading = false;
   isFilled = false;
   isEmpty = false;
+
+  selectedValue: string = '';
+  categories = [
+    { value: 'Salary', viewValue: 'Salary' },
+    { value: 'Cryptocurrency', viewValue: 'Cryptocurrency' },
+    { value: 'Allowance', viewValue: 'Allowance' },
+    { value: 'Business', viewValue: 'Business' },
+    { value: 'Gifts', viewValue: 'Gifts' },
+  ];
+
+  ngOnInit() {
+    this.uid = this.auth.getUserId();
+    console.log('User ID: ' + this.uid);
+    if (!this.uid) {
+      console.error('Not currently signed in');
+      return;
+    }
+    this.isFilled = true;
+    this.getIncome();
+  }
+
+  ngOnDestroy(): void {
+    console.log('DashboardComponent destroyed');
+    this.unsubscribe$.next();
+    this.unsubscribe$.complete();
+  }
+
+  logout() {
+    this.auth.logout();
+  }
 
   calculateTotalAmount() {
     this.totalAmount = this.incomeData.reduce(
@@ -40,21 +67,14 @@ export class IncomeComponent {
 
   addIncome(form: NgForm) {
     this.isFilled = false;
-    console.log('current UID:', this.uid);
     if (!this.uid) {
-      console.error('Not currently signed in');
+      console.error('Cannot add income, user ID not found');
       return;
     }
 
     const dateInt = new Date(form.value.date).getTime();
+    const date = new Date(form.value.date);
 
-    const firestoreTimestamp: Timestamp = Timestamp.fromDate(form.value.date);
-    console.log('Firestore Timestamp:', firestoreTimestamp);
-    const firestoreTimestampString = firestoreTimestamp.toDate().toString();
-
-    const date = new Date(firestoreTimestampString);
-
-    // Step 2: Format the date into "MMM DD YYYY" format
     const formattedDate = date.toLocaleDateString('en-US', {
       month: 'short',
       day: '2-digit',
@@ -67,6 +87,7 @@ export class IncomeComponent {
       title: form.value.Title,
       amount: form.value.Amount,
       dateString: formattedDate,
+      category: this.selectedValue,
       dateInt: dateInt,
       date: date,
       description: form.value.description,
@@ -77,7 +98,8 @@ export class IncomeComponent {
       !incomeData.title ||
       !incomeData.amount ||
       !incomeData.date ||
-      !incomeData.description
+      !incomeData.description ||
+      !incomeData.category
     ) {
       this.isFilled = false;
       console.error('All fields are required');
@@ -102,9 +124,8 @@ export class IncomeComponent {
 
   getIncome() {
     this.isLoading = true;
-    console.log('User ID: ' + this.uid);
     if (!this.uid) {
-      console.error('Not currently signed ins');
+      console.error('Cannot get income, user ID not found');
       return;
     }
 
@@ -129,45 +150,21 @@ export class IncomeComponent {
   }
 
   deleteIncome(id: string) {
+    if (!id) {
+      console.error('Cannot delete expense without ID');
+      return;
+    }
+
     this.firestore
-      .collection('incomes')
+      .collection('income')
       .doc(id)
       .delete()
       .then(() => {
         console.log('Document successfully deleted!');
+        this.incomeData = this.incomeData.filter((income) => income.id !== id);
       })
       .catch((error) => {
         console.error('Error removing document: ', error);
       });
-  }
-
-  async getUserId() {
-    try {
-      const user = await this.fireAuth.currentUser;
-      if (user) {
-        this.uid = user.uid;
-        console.log('User ID: ' + this.uid);
-      } else {
-        console.log('No user is currently signed in.');
-      }
-    } catch (error) {
-      console.error('Error getting current user: ', error);
-    }
-  }
-
-  async ngOnInit(): Promise<void> {
-    await this.getUserId();
-    this.isFilled = true;
-    this.getIncome();
-  }
-
-  ngOnDestroy(): void {
-    console.log('DashboardComponent destroyed');
-    this.unsubscribe$.next();
-    this.unsubscribe$.complete();
-  }
-
-  logout() {
-    this.auth.logout();
   }
 }

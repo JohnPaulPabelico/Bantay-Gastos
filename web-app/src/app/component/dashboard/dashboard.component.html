@@ -1,6 +1,6 @@
 <mat-drawer-container class="example-container">
   <mat-drawer class="drawer" mode="side" opened>
-    <img src="/assets/gastos.png" height="70" class="logo" />
+    <img src="assets/gastos.png" height="70" class="logo" />
     <div class="button-group">
       <a class="active">
         <mat-icon
@@ -45,6 +45,41 @@
   <mat-drawer-content>
     <div class="welcome-container">
       <div class="dashboard-title">Dashboard</div>
+    </div>
+    <div class="dashboard-container">
+      <div class="finance-container">
+        <div class="finance-panels-container">
+          <div class="panel-container">
+            Total Balance:
+            <span *ngIf="isLoading" class="balance">&nbsp; ... </span>
+            <span *ngIf="!isLoading" class="balance"
+              >&nbsp;{{ totalBalance | number : "1.0" : "en-US" }}
+            </span>
+          </div>
+          <div class="panel-container">
+            Total Expenses:
+            <span *ngIf="isLoading" class="income-expense">&nbsp; ... </span>
+            <span *ngIf="!isLoading" class="income-expense"
+              >&nbsp;{{ totalExpenses | number : "1.0" : "en-US" }}</span
+            >
+          </div>
+          <div class="panel-container">
+            Total Income:
+            <span *ngIf="isLoading" class="income-expense">&nbsp; ... </span>
+            <span *ngIf="!isLoading" class="income-expense"
+              >&nbsp;{{ totalIncome | number : "1.0" : "en-US" }}</span
+            >
+          </div>
+        </div>
+      </div>
+      <div class="analysis-container">
+        <div class="chart-container">
+          <canvas id="expensesChart" width="560" height="300"></canvas>
+        </div>
+        <div class="chart-container">
+          <canvas id="incomeChart" width="560" height="300"></canvas>
+        </div>
+      </div>
     </div>
   </mat-drawer-content>
 </mat-drawer-container>

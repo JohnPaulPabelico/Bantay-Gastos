@@ -23,12 +23,13 @@ import { ForgotPasswordEmailComponent } from './forgot-password-email/forgot-pas
 import { MatListModule } from '@angular/material/list';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
-
+import { MatSelectModule } from '@angular/material/select';
 import { AngularFireAuthModule } from '@angular/fire/compat/auth';
 import { AngularFirestoreModule } from '@angular/fire/compat/firestore';
 import { AngularFireModule } from '@angular/fire/compat';
 import { ScrollingModule } from '@angular/cdk/scrolling';
 import { TruncatePipe } from './truncate.pipe';
+import { getAuth, provideAuth } from '@angular/fire/auth';
 
 @NgModule({
   declarations: [
@@ -47,6 +48,7 @@ import { TruncatePipe } from './truncate.pipe';
     BrowserModule,
     AppRoutingModule,
     AngularFireModule.initializeApp(environment.firebase),
+
     AngularFirestoreModule,
     AngularFireAuthModule,
     BrowserAnimationsModule,
@@ -62,6 +64,8 @@ import { TruncatePipe } from './truncate.pipe';
     ScrollingModule,
     MatDatepickerModule,
     MatNativeDateModule,
+    MatSelectModule,
+    provideAuth(() => getAuth()),
   ],
   providers: [],
   bootstrap: [AppComponent],
