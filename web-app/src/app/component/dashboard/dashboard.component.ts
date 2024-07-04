@@ -7,6 +7,7 @@ import { Chart, registerables } from 'chart.js';
 import { groupBy } from 'lodash';
 Chart.register(...registerables);
 import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-dashboard',
@@ -40,7 +41,7 @@ export class DashboardComponent {
       console.error('Not currently signed in');
       return;
     }
-    
+
     this.breakpointObserver
       .observe([Breakpoints.Small, Breakpoints.Handset])
       .subscribe((result) => {
@@ -185,6 +186,20 @@ export class DashboardComponent {
 
     //   this.calculateTotalExpensesAndIncome();
     // });
+  }
+
+  editProfile() {
+    Swal.fire({
+      title: 'Edit Profile',
+      input: 'text',
+      inputLabel: 'Display Name',
+      inputPlaceholder: 'Enter your display name',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Yes',
+      backdrop: false,
+    });
   }
 
   RenderChart(

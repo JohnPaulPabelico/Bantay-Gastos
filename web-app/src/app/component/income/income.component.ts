@@ -162,6 +162,19 @@ export class IncomeComponent {
       );
   }
 
+  editProfile() {
+    Swal.fire({
+      title: 'Edit Profile',
+      input: 'text',
+      inputLabel: 'Display Name',
+      inputPlaceholder: 'Enter your display name',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Yes',
+      backdrop: false,
+    });
+  }
   deleteIncome(id: string) {
     if (!id) {
       console.error('Cannot delete expense without ID');
