@@ -11,6 +11,21 @@
   background: #eee;
 }
 
+.profile-container {
+  margin-left: auto;
+}
+
+.profile {
+  border-radius: 50%;
+  border: #000000 solid 1px;
+  transition: all 0.15s ease-in-out;
+  cursor: pointer;
+}
+
+.profile:hover {
+  box-shadow: 0px 5px 0px 0px rgba(0, 0, 0, 0.9);
+}
+
 .logo {
   margin-top: 20px;
   margin-left: 10px;
@@ -141,16 +156,16 @@ a {
 
 .finance-panels-container {
   display: flex;
+  flex-direction: column;
   justify-content: space-between;
   gap: 10px;
-  width: 75%;
+  width: 90%;
 }
 
 .panel-container {
   display: flex;
   align-items: center;
   padding: 20px;
-  width: 35%;
   background-color: white;
   border-radius: 1.5rem;
   box-shadow: 0px 5px 0px 0px rgba(0, 0, 0, 1);
@@ -175,6 +190,7 @@ a {
 
 .analysis-container {
   display: flex;
+  flex-direction: column;
   justify-content: center;
   gap: 10px;
 }
@@ -208,5 +224,33 @@ a {
     height: 100%;
     flex-direction: column;
     justify-content: space-between;
+  }
+
+  .finance-panels-container {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    gap: 10px;
+    width: 75%;
+  }
+
+  .panel-container {
+    display: flex;
+    align-items: center;
+    padding: 20px;
+    width: 35%;
+    background-color: white;
+    border-radius: 1.5rem;
+    box-shadow: 0px 5px 0px 0px rgba(0, 0, 0, 1);
+    border: #000000 solid 1px;
+    font-size: x-large;
+    font-weight: 700;
+  }
+
+  .analysis-container {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    margin: 25px;
   }
 }
