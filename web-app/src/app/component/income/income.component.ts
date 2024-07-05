@@ -52,6 +52,10 @@ export class IncomeComponent {
 
     this.breakpointObserver
       .observe([Breakpoints.Small, Breakpoints.Handset])
+      .pipe(
+        takeUntil(this.unsubscribe$),
+        tap(() => console.log('breakpoint subscription unsubscribed'))
+      )
       .subscribe((result) => {
         this.isSmallScreen = result.matches;
         this.sideNavMode = result.matches ? 'over' : 'side';
