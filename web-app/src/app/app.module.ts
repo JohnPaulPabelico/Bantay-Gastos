@@ -29,7 +29,8 @@ import { AngularFirestoreModule } from '@angular/fire/compat/firestore';
 import { AngularFireModule } from '@angular/fire/compat';
 import { ScrollingModule } from '@angular/cdk/scrolling';
 import { TruncatePipe } from './truncate.pipe';
-import { getAuth, provideAuth } from '@angular/fire/auth';
+import { MatMenuModule } from '@angular/material/menu';
+import { EditProfileComponent } from './edit-profile/edit-profile.component';
 
 @NgModule({
   declarations: [
@@ -43,12 +44,12 @@ import { getAuth, provideAuth } from '@angular/fire/auth';
     VerifyEmailComponent,
     ForgotPasswordEmailComponent,
     TruncatePipe,
+    EditProfileComponent,
   ],
   imports: [
     BrowserModule,
     AppRoutingModule,
     AngularFireModule.initializeApp(environment.firebase),
-
     AngularFirestoreModule,
     AngularFireAuthModule,
     BrowserAnimationsModule,
@@ -65,7 +66,7 @@ import { getAuth, provideAuth } from '@angular/fire/auth';
     MatDatepickerModule,
     MatNativeDateModule,
     MatSelectModule,
-    provideAuth(() => getAuth()),
+    MatMenuModule,
   ],
   providers: [],
   bootstrap: [AppComponent],

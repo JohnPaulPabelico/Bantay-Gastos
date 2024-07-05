@@ -1,6 +1,26 @@
-<mat-drawer-container class="example-container">
-  <mat-drawer class="drawer" mode="side" opened>
-    <img src="assets/gastos.png" height="70" class="logo" />
+<mat-drawer-container class="example-container" [hasBackdrop]="isSmallScreen">
+  <mat-drawer
+    #drawer
+    class="drawer"
+    [mode]="sideNavMode"
+    [opened]="!isSmallScreen"
+  >
+    <div
+      style="display: flex; align-items: center; justify-content: space-between"
+    >
+      <img src="assets/gastos.png" height="70" class="logo" />
+      <div>
+        <button
+          mat-icon-button
+          class="menu-button"
+          style="margin-right: 20px; margin-top: 20px"
+          (click)="drawer.toggle()"
+        >
+          <mat-icon>close</mat-icon>
+        </button>
+      </div>
+    </div>
+
     <div class="button-group">
       <a class="active">
         <mat-icon
@@ -30,21 +50,45 @@
         <div>Income</div>
       </a>
     </div>
-    <div class="logout-container">
-      <div class="logout-button" (click)="logout()">
-        <mat-icon
-          aria-hidden="false"
-          aria-label="Example home icon"
-          fontIcon="logout"
-          class="icon"
-        ></mat-icon>
-        <span>Logout</span>
-      </div>
-    </div>
   </mat-drawer>
   <mat-drawer-content>
     <div class="welcome-container">
+      <div>
+        <button mat-icon-button class="menu-button" (click)="drawer.toggle()">
+          <mat-icon>menu</mat-icon>
+        </button>
+      </div>
       <div class="dashboard-title">Dashboard</div>
+      <div class="profile-container">
+        <span *ngIf="userData && userData.displayName" class="profile-greetings"
+          >Hello,
+          <span class="profile-greetings-name">
+            {{ userData.displayName }}
+          </span>
+        </span>
+        <span
+          *ngIf="(!userData || !userData.displayName) && !isLoading"
+          class="profile-update-alert"
+          >Update your profile
+        </span>
+        <span
+          *ngIf="(!userData || !userData.displayName) && isLoading"
+          class="profile-greetings"
+          >Loading...
+        </span>
+        <input
+          type="image"
+          src="assets/black-profile.jpg"
+          height="60"
+          mat-button
+          [matMenuTriggerFor]="beforeMenu"
+          class="profile"
+        />
+        <mat-menu #beforeMenu="matMenu" xPosition="before">
+          <button mat-menu-item (click)="editProfile()">Edit Profile</button>
+          <button mat-menu-item (click)="logout()">Logout</button>
+        </mat-menu>
+      </div>
     </div>
     <div class="dashboard-container">
       <div class="finance-container">
@@ -83,3 +127,11 @@
     </div>
   </mat-drawer-content>
 </mat-drawer-container>
+
+<app-edit-profile
+  *ngIf="isEditProfile"
+  (toggleEditProfile)="editProfile()"
+  [displayName]="displayName"
+>
+  ></app-edit-profile
+>

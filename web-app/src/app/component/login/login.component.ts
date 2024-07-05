@@ -6,13 +6,12 @@ import { AuthService } from 'src/app/shared/auth.service';
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.scss'],
 })
-export class LoginComponent implements OnInit {
+export class LoginComponent {
   email: string = '';
   password: string = '';
+  isIncorrect = false;
 
   constructor(private auth: AuthService) {}
-
-  ngOnInit(): void {}
 
   login() {
     if (this.email == '') {
@@ -25,7 +24,10 @@ export class LoginComponent implements OnInit {
       return;
     }
 
-    this.auth.login(this.email, this.password);
+    this.auth.login(this.email, this.password).catch((err) => {
+      this.isIncorrect = true;
+      console.error(err);
+    });
 
     this.email = '';
     this.password = '';

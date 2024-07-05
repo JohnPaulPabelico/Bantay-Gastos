@@ -1,41 +1,79 @@
+import { UserService } from 'src/app/shared/user.service';
 import { Component } from '@angular/core';
 import { AuthService } from 'src/app/shared/auth.service';
 import { ExpenseService } from 'src/app/shared/expense.service';
 import { IncomeService } from 'src/app/shared/income.service';
-import { combineLatest } from 'rxjs';
+import { Subject, combineLatest, takeUntil, tap } from 'rxjs';
 import { Chart, registerables } from 'chart.js';
 import { groupBy } from 'lodash';
 Chart.register(...registerables);
+import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
+import Swal from 'sweetalert2';
+import {
+  animate,
+  state,
+  style,
+  transition,
+  trigger,
+} from '@angular/animations';
+import { User } from 'src/app/model/users';
 
 @Component({
   selector: 'app-dashboard',
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.scss'],
+  // animations: [
+  //   trigger('fadeInOut', [
+  //     state('void', style({ opacity: 0 })),
+  //     transition('void <=> *', animate('300ms ease-in-out')), // Adjust timing (300ms) as needed
+  //   ]),
+  // ],
 })
 export class DashboardComponent {
   expenseData: any[] = [];
   incomeData: any[] = [];
+  userData: User | null = null;
   uid: string | undefined;
   totalExpenses: number = 0;
   totalIncome: number = 0;
   totalBalance: number = 0;
 
+  isSmallScreen = false; // default value
+  sideNavMode: 'over' | 'side' = 'side';
+
+  isEditProfile = false;
   isLoading = true;
+  private unsubscribe$ = new Subject<void>();
 
   constructor(
     private auth: AuthService,
     private expenseService: ExpenseService,
-    private incomeService: IncomeService
+    private incomeService: IncomeService,
+    private breakpointObserver: BreakpointObserver,
+    private userService: UserService
   ) {}
 
-  async ngOnInit(): Promise<void> {
+  ngOnInit() {
     this.uid = this.auth.getUserId();
     console.log('User ID: ' + this.uid);
     if (!this.uid) {
       console.error('Not currently signed in');
       return;
     }
+
+    this.breakpointObserver
+      .observe([Breakpoints.Small, Breakpoints.Handset])
+      .pipe(
+        takeUntil(this.unsubscribe$),
+        tap(() => console.log('breakpoint subscription unsubscribed'))
+      )
+      .subscribe((result) => {
+        this.isSmallScreen = result.matches;
+        this.sideNavMode = result.matches ? 'over' : 'side';
+      });
+
     this.getExpenseIncome();
+    this.getUserInfo();
   }
 
   logout() {
@@ -60,6 +98,36 @@ export class DashboardComponent {
       'Expenses: ' + this.totalExpenses,
       'Income: ' + this.totalIncome
     );
+  }
+
+  getUserInfo() {
+    if (!this.uid) {
+      console.error('Cannot get user info, not currently signed in');
+      return;
+    }
+
+    this.userService
+      .readUser(this.uid)
+      .pipe(takeUntil(this.unsubscribe$))
+      .subscribe(
+        (user: User) => {
+          // Ensure 'user' is typed as an object, 'any' should be changed to the actual type of your user object
+          console.log('User data:', user); // Log user data to verify structure
+          if (user) {
+            this.userData = user;
+            console.log('Existing User data:', this.userData); // Should not show error now
+          } else {
+            console.warn('No user data found for UID:', this.uid);
+          }
+        },
+        (error) => {
+          console.error('Error fetching user info:', error);
+        }
+      );
+  }
+
+  get displayName(): string | undefined {
+    return this.userData?.displayName;
   }
 
   getExpenseIncome() {
@@ -100,65 +168,70 @@ export class DashboardComponent {
     combineLatest([
       this.expenseService.readExpense(this.uid),
       this.incomeService.readIncome(this.uid),
-    ]).subscribe({
-      next: ([expenses, income]) => {
-        console.log('Expenses and income fetched successfully.');
+    ])
+      .pipe(
+        takeUntil(this.unsubscribe$),
+        tap(() => console.log('getExpenseIncome subscription unsubscribed'))
+      )
+      .subscribe({
+        next: ([expenses, income]) => {
+          console.log('Expenses and income fetched successfully.');
 
-        const groupedExpenses = groupBy(expenses, (expense: any) => {
-          // Assuming date is in 'Jul 01, 2024' format, extract month and year
-          const date = new Date(expense.dateString); // Adjust this based on your date format
-          return `${date.getMonth() + 1}-${date.getFullYear()}`;
-        });
+          const groupedExpenses = groupBy(expenses, (expense: any) => {
+            // Assuming date is in 'Jul 01, 2024' format, extract month and year
+            const date = new Date(expense.dateString); // Adjust this based on your date format
+            return `${date.getMonth() + 1}-${date.getFullYear()}`;
+          });
 
-        const groupedIncome = groupBy(income, (incomeItem: any) => {
-          // Assuming date is in 'Jul 01, 2024' format, extract month and year
-          const date = new Date(incomeItem.dateString); // Adjust this based on your date format
-          return `${date.getMonth() + 1}-${date.getFullYear()}`;
-        });
+          const groupedIncome = groupBy(income, (incomeItem: any) => {
+            // Assuming date is in 'Jul 01, 2024' format, extract month and year
+            const date = new Date(incomeItem.dateString); // Adjust this based on your date format
+            return `${date.getMonth() + 1}-${date.getFullYear()}`;
+          });
 
-        // Calculate total amounts per month for expenses
-        const monthlyExpenseTotals = Object.keys(groupedExpenses).map(
-          (monthYear) => {
-            const expensesInMonth = groupedExpenses[monthYear];
-            const totalAmount = expensesInMonth.reduce(
-              (acc: number, expense: any) => acc + expense.amount,
-              0
-            );
-            return { monthYear, totalAmount };
-          }
-        );
+          // Calculate total amounts per month for expenses
+          const monthlyExpenseTotals = Object.keys(groupedExpenses).map(
+            (monthYear) => {
+              const expensesInMonth = groupedExpenses[monthYear];
+              const totalAmount = expensesInMonth.reduce(
+                (acc: number, expense: any) => acc + expense.amount,
+                0
+              );
+              return { monthYear, totalAmount };
+            }
+          );
 
-        // Calculate total amounts per month for income
-        const monthlyIncomeTotals = Object.keys(groupedIncome).map(
-          (monthYear) => {
-            const incomeInMonth = groupedIncome[monthYear];
-            const totalAmount = incomeInMonth.reduce(
-              (acc: number, incomeItem: any) => acc + incomeItem.amount,
-              0
-            );
-            return { monthYear, totalAmount };
-          }
-        );
+          // Calculate total amounts per month for income
+          const monthlyIncomeTotals = Object.keys(groupedIncome).map(
+            (monthYear) => {
+              const incomeInMonth = groupedIncome[monthYear];
+              const totalAmount = incomeInMonth.reduce(
+                (acc: number, incomeItem: any) => acc + incomeItem.amount,
+                0
+              );
+              return { monthYear, totalAmount };
+            }
+          );
 
-        console.log('Monthly expense totals:', monthlyExpenseTotals);
-        console.log('Monthly income totals:', monthlyIncomeTotals);
+          console.log('Monthly expense totals:', monthlyExpenseTotals);
+          console.log('Monthly income totals:', monthlyIncomeTotals);
 
-        this.expenseData = expenses;
-        console.log('Fetched expenses:', this.expenseData);
+          this.expenseData = expenses;
+          console.log('Fetched expenses:', this.expenseData);
 
-        this.incomeData = income;
-        console.log('Fetched income:', this.incomeData);
-        this.isLoading = false;
-        this.calculateTotal();
-        this.RenderChart(monthlyExpenseTotals, monthlyIncomeTotals);
-      },
-      error: (err) => {
-        console.error('Error fetching expenses or income:', err);
-      },
-      complete: () => {
-        console.log('Fetching expenses and income completed.');
-      },
-    });
+          this.incomeData = income;
+          console.log('Fetched income:', this.incomeData);
+          this.isLoading = false;
+          this.calculateTotal();
+          this.RenderChart(monthlyExpenseTotals, monthlyIncomeTotals);
+        },
+        error: (err) => {
+          console.error('Error fetching expenses or income:', err);
+        },
+        complete: () => {
+          console.log('Fetching expenses and income completed.');
+        },
+      });
 
     // forkJoin({
     //   expenses: this.expenseService.readExpense(this.uid),
@@ -172,6 +245,11 @@ export class DashboardComponent {
 
     //   this.calculateTotalExpensesAndIncome();
     // });
+  }
+
+  editProfile() {
+    this.isEditProfile = !this.isEditProfile;
+    console.log('Edit profile:', this.isEditProfile);
   }
 
   RenderChart(
@@ -228,5 +306,11 @@ export class DashboardComponent {
         },
       },
     });
+  }
+
+  ngOnDestroy(): void {
+    console.log('DashboardComponent destroyed');
+    this.unsubscribe$.next();
+    this.unsubscribe$.complete();
   }
 }
