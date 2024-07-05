@@ -1,0 +1,96 @@
+.edit-profile-section {
+  min-height: 100dvh;
+  background-color: white;
+  z-index: 10;
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.edit-profile-container {
+  align-items: center;
+  padding: 1.5rem;
+  background-color: #d1d1d1;
+  border-radius: 1.5rem;
+  box-shadow: 0px 5px 0px 0px rgba(0, 0, 0, 1);
+  border: #000000 solid 1px;
+  font-size: x-large;
+  font-weight: 700;
+}
+
+.menu-button-container {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.menu-button {
+  border: #000000 solid 1px;
+  border-radius: 0.75rem;
+  background-color: white;
+  transition: all 0.15s ease-in-out;
+  cursor: pointer;
+}
+
+.menu-button:hover {
+  box-shadow: 0px 3px 0px 0px rgba(0, 0, 0, 1);
+}
+
+.profile {
+  border-radius: 50%;
+  border: #000000 solid 1px;
+  transition: all 0.15s ease-in-out;
+  cursor: pointer;
+  margin-top: 10px;
+}
+
+.profile-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.form-container {
+  margin-top: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.button-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 20px;
+}
+
+.button {
+  outline: 1px solid #000000;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  text-align: center;
+  padding: 20px;
+  font-size: large;
+  border-radius: 1.5rem;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+}
+
+.button:hover {
+  box-shadow: 0px 3px 0px 0px rgba(0, 0, 0, 1);
+}
+
+.save {
+  background-color: #adff2f;
+}
+
+.cancel {
+  background-color: #a7a7a7;
+}

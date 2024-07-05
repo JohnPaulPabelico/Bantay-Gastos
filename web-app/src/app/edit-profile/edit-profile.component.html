@@ -1,0 +1,39 @@
+<div class="edit-profile-section">
+  <div>
+    <img src="assets/gastos.png" height="100" />
+    <div class="edit-profile-container">
+      <div class="menu-button-container">
+        <button mat-icon-button class="menu-button" (click)="onButtonClick()">
+          <mat-icon>close</mat-icon>
+        </button>
+      </div>
+      <div class="profile-container">
+        <img src="assets/black-profile.jpg" height="70" class="profile" />
+        <div *ngIf="displayName">{{ displayName }}</div>
+        <div *ngIf="!displayName">Add your name</div>
+      </div>
+
+      <div class="form-container">
+        <form
+          #editProfileForm="ngForm"
+          (ngSubmit)="updateInformation(editProfileForm)"
+        >
+          <mat-form-field
+            class="form-field white-backgrounded-field green-bordered-field"
+            appearance="outline"
+          >
+            <mat-label>Name</mat-label>
+            <input matInput type="string" name="displayName" ngModel />
+          </mat-form-field>
+
+          <div class="button-container">
+            <button class="button save" type="submit">Save</button>
+            <!-- <button class="button cancel" (click)="onButtonClick()">
+              Cancel
+            </button> -->
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
