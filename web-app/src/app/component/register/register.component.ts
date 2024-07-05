@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { AuthService } from 'src/app/shared/auth.service';
+import { UserService } from 'src/app/shared/user.service';
 
 @Component({
   selector: 'app-register',
@@ -13,22 +14,13 @@ export class RegisterComponent {
 
   constructor(private auth: AuthService) {}
 
-  ngOnInit(): void {}
-
   register() {
-    if (this.email == '') {
-      this.isFilled = false;
-      return;
-    }
-
-    if (this.password == '') {
-      alert('Please enter password');
+    if (this.email == '' || this.password == '') {
       this.isFilled = false;
       return;
     }
 
     this.auth.register(this.email, this.password);
-
     this.email = '';
     this.password = '';
   }
