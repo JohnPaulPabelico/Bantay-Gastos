@@ -29,6 +29,8 @@ import { AngularFirestoreModule } from '@angular/fire/compat/firestore';
 import { AngularFireModule } from '@angular/fire/compat';
 import { ScrollingModule } from '@angular/cdk/scrolling';
 import { TruncatePipe } from './truncate.pipe';
+import { MatMenuModule } from '@angular/material/menu';
+import { EditProfileComponent } from './edit-profile/edit-profile.component';
 
 @NgModule({
   declarations: [
@@ -42,6 +44,7 @@ import { TruncatePipe } from './truncate.pipe';
     VerifyEmailComponent,
     ForgotPasswordEmailComponent,
     TruncatePipe,
+    EditProfileComponent,
   ],
   imports: [
     BrowserModule,
@@ -63,6 +66,7 @@ import { TruncatePipe } from './truncate.pipe';
     MatDatepickerModule,
     MatNativeDateModule,
     MatSelectModule,
+    MatMenuModule,
   ],
   providers: [],
   bootstrap: [AppComponent],
