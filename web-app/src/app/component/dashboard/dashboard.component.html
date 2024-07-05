@@ -50,17 +50,6 @@
         <div>Income</div>
       </a>
     </div>
-    <div class="logout-container">
-      <div class="logout-button" (click)="logout()">
-        <mat-icon
-          aria-hidden="false"
-          aria-label="Example home icon"
-          fontIcon="logout"
-          class="icon"
-        ></mat-icon>
-        <span>Logout</span>
-      </div>
-    </div>
   </mat-drawer>
   <mat-drawer-content>
     <div class="welcome-container">
@@ -70,8 +59,35 @@
         </button>
       </div>
       <div class="dashboard-title">Dashboard</div>
-      <div class="profile-container" (click)="editProfile()">
-        <img src="assets/black-profile.jpg" height="60" class="profile" />
+      <div class="profile-container">
+        <span *ngIf="userData && userData.displayName" class="profile-greetings"
+          >Hello,
+          <span class="profile-greetings-name">
+            {{ userData.displayName }}
+          </span>
+        </span>
+        <span
+          *ngIf="(!userData || !userData.displayName) && !isLoading"
+          class="profile-update-alert"
+          >Update your profile
+        </span>
+        <span
+          *ngIf="(!userData || !userData.displayName) && isLoading"
+          class="profile-greetings"
+          >Loading...
+        </span>
+        <input
+          type="image"
+          src="assets/black-profile.jpg"
+          height="60"
+          mat-button
+          [matMenuTriggerFor]="beforeMenu"
+          class="profile"
+        />
+        <mat-menu #beforeMenu="matMenu" xPosition="before">
+          <button mat-menu-item (click)="editProfile()">Edit Profile</button>
+          <button mat-menu-item (click)="logout()">Logout</button>
+        </mat-menu>
       </div>
     </div>
     <div class="dashboard-container">
@@ -111,3 +127,11 @@
     </div>
   </mat-drawer-content>
 </mat-drawer-container>
+
+<app-edit-profile
+  *ngIf="isEditProfile"
+  (toggleEditProfile)="editProfile()"
+  [displayName]="displayName"
+>
+  ></app-edit-profile
+>

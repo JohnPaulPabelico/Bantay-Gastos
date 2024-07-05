@@ -13,6 +13,23 @@
 
 .profile-container {
   margin-left: auto;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.profile-greetings {
+  margin-right: 20px;
+  font-size: x-large;
+}
+
+.profile-update-alert {
+  margin-right: 20px;
+  font-size: large;
+  color: red;
+}
+
+.profile-greetings-name {
+  font-weight: 700;
 }
 
 .profile {
