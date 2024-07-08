@@ -12,6 +12,24 @@
 }
 .profile-container {
   margin-left: auto;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.profile-greetings {
+  margin-right: 10px;
+  font-size: large;
+}
+
+.profile-update-alert {
+  margin-right: 20px;
+  font-size: large;
+  color: red;
+}
+
+.profile-greetings-name {
+  font-weight: 700;
 }
 
 .profile {
@@ -124,7 +142,8 @@ a {
   align-items: center;
   justify-content: start;
   padding: 20px;
-  margin: 20px;
+  margin-top: 20px;
+  margin-bottom: 20px;
 }
 
 .transaction-container {
@@ -440,6 +459,10 @@ a {
   }
   .filler {
     display: none;
+  }
+  .profile-greetings {
+    margin-right: 20px;
+    font-size: x-large;
   }
 }
 

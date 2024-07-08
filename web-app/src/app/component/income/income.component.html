@@ -70,8 +70,35 @@
         </button>
       </div>
       <div class="transaction-title">Income</div>
-      <div class="profile-container" (click)="editProfile()">
-        <img src="assets/black-profile.jpg" height="60" class="profile" />
+      <div class="profile-container">
+        <span *ngIf="userData && userData.displayName" class="profile-greetings"
+          >Hello,
+          <span class="profile-greetings-name">
+            {{ userData.displayName }}
+          </span>
+        </span>
+        <span
+          *ngIf="(!userData || !userData.displayName) && !isLoading"
+          class="profile-update-alert"
+          >Update your profile
+        </span>
+        <span
+          *ngIf="(!userData || !userData.displayName) && isLoading"
+          class="profile-greetings"
+          >Loading...
+        </span>
+        <input
+          type="image"
+          [src]="imageUrl || 'assets/black-profile.jpg'"
+          height="60"
+          mat-button
+          [matMenuTriggerFor]="beforeMenu"
+          class="profile"
+        />
+        <mat-menu #beforeMenu="matMenu" xPosition="before">
+          <button mat-menu-item (click)="editProfile()">Edit Profile</button>
+          <button mat-menu-item (click)="logout()">Logout</button>
+        </mat-menu>
       </div>
     </div>
     <div class="total-income-container">
@@ -245,3 +272,13 @@
     <div class="filler"></div>
   </mat-drawer-content>
 </mat-drawer-container>
+
+<app-edit-profile
+  *ngIf="isEditProfile"
+  (toggleEditProfile)="editProfile()"
+  [displayName]="displayName"
+  [emailAddress]="emailAddress"
+  [existingImageUrl]="imageUrl"
+>
+  ></app-edit-profile
+>
