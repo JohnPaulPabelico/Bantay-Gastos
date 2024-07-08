@@ -12,6 +12,20 @@
   justify-content: center;
 }
 
+.icon-display {
+  transform: scale(0.8);
+  margin-left: 5px;
+  transform: translateY(-2px);
+  cursor: pointer;
+  color: #666666;
+}
+
+.email-address {
+  font-size: large;
+  display: flex;
+  align-items: center;
+}
+
 .edit-profile-container {
   align-items: center;
   padding: 1.5rem;
@@ -21,6 +35,7 @@
   border: #000000 solid 1px;
   font-size: x-large;
   font-weight: 700;
+  margin-bottom: 100px;
 }
 
 .menu-button-container {
