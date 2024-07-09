@@ -8,9 +8,27 @@
         </button>
       </div>
       <div class="profile-container">
-        <img src="assets/black-profile.jpg" height="70" class="profile" />
+        <img
+          [src]="existingImageUrl || 'assets/black-profile.jpg'"
+          height="60"
+          width="60"
+          alt="Upload Image"
+          (click)="openImageUpload()"
+          class="profile"
+        />
+        <input
+          type="file"
+          id="fileInput"
+          style="display: none"
+          (change)="onFileSelected($event)"
+          accept="image/*"
+        />
         <div *ngIf="displayName">{{ displayName }}</div>
         <div *ngIf="!displayName">Add your name</div>
+        <div class="email-address" *ngIf="emailAddress">
+          {{ emailAddress }}
+          <!-- <mat-icon class="icon-display"> edit </mat-icon> -->
+        </div>
       </div>
 
       <div class="form-container">

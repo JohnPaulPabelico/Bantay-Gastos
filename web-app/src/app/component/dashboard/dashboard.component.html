@@ -78,8 +78,9 @@
         </span>
         <input
           type="image"
-          src="assets/black-profile.jpg"
+          [src]="imageUrl || 'assets/black-profile.jpg'"
           height="60"
+          width="60"
           mat-button
           [matMenuTriggerFor]="beforeMenu"
           class="profile"
@@ -132,6 +133,8 @@
   *ngIf="isEditProfile"
   (toggleEditProfile)="editProfile()"
   [displayName]="displayName"
+  [emailAddress]="emailAddress"
+  [existingImageUrl]="imageUrl"
 >
   ></app-edit-profile
 >

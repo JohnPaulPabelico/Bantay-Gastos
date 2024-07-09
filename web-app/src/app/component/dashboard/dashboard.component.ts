@@ -8,26 +8,12 @@ import { Chart, registerables } from 'chart.js';
 import { groupBy } from 'lodash';
 Chart.register(...registerables);
 import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
-import Swal from 'sweetalert2';
-import {
-  animate,
-  state,
-  style,
-  transition,
-  trigger,
-} from '@angular/animations';
 import { User } from 'src/app/model/users';
 
 @Component({
   selector: 'app-dashboard',
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.scss'],
-  // animations: [
-  //   trigger('fadeInOut', [
-  //     state('void', style({ opacity: 0 })),
-  //     transition('void <=> *', animate('300ms ease-in-out')), // Adjust timing (300ms) as needed
-  //   ]),
-  // ],
 })
 export class DashboardComponent {
   expenseData: any[] = [];
@@ -130,40 +116,20 @@ export class DashboardComponent {
     return this.userData?.displayName;
   }
 
+  get imageUrl(): string | undefined {
+    return this.userData?.imageUrl;
+  }
+
+  get emailAddress(): string | undefined {
+    return this.userData?.email;
+  }
+
   getExpenseIncome() {
     this.isLoading = true;
     if (!this.uid) {
       console.error('Cannot get expenses or income, not currently signed in');
       return;
     }
-
-    // this.expenseService.readExpense(this.uid).subscribe((expenses: any[]) => {
-    //   this.expenseData = expenses;
-    //   console.log('Fetched expenses:', this.expenseData);
-    // });
-
-    // this.incomeService.readIncome(this.uid).subscribe((income: any[]) => {
-    //   this.incomeData = income;
-    //   console.log('Fetched income:', this.incomeData);
-    //   this.calculateTotalExpensesAndIncome();
-    // });
-
-    // merge(
-    //   this.expenseService.readExpense(this.uid).pipe(
-    //     tap((expenses) => {
-    //       this.expenseData = expenses;
-    //       console.log('Fetched expenses:', this.expenseData);
-    //     })
-    //   ),
-    //   this.incomeService.readIncome(this.uid).pipe(
-    //     tap((income) => {
-    //       this.incomeData = income;
-    //       console.log('Fetched income:', this.incomeData);
-    //     })
-    //   )
-    // ).subscribe(() => {
-    //   this.calculateTotalExpensesAndIncome();
-    // });
 
     combineLatest([
       this.expenseService.readExpense(this.uid),
@@ -232,19 +198,6 @@ export class DashboardComponent {
           console.log('Fetching expenses and income completed.');
         },
       });
-
-    // forkJoin({
-    //   expenses: this.expenseService.readExpense(this.uid),
-    //   income: this.incomeService.readIncome(this.uid),
-    // }).subscribe(({ expenses, income }) => {
-    //   this.expenseData = expenses;
-    //   console.log('Fetched expenses:', this.expenseData);
-
-    //   this.incomeData = income;
-    //   console.log('Fetched income:', this.incomeData);
-
-    //   this.calculateTotalExpensesAndIncome();
-    // });
   }
 
   editProfile() {

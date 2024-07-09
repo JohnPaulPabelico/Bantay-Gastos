@@ -7,6 +7,8 @@ import { AngularFirestore } from '@angular/fire/compat/firestore';
 import { Income } from 'src/app/model/income';
 import Swal from 'sweetalert2';
 import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
+import { UserService } from 'src/app/shared/user.service';
+import { User } from 'src/app/model/users';
 
 @Component({
   selector: 'app-income',
@@ -19,7 +21,8 @@ export class IncomeComponent {
     private auth: AuthService,
     private incomeService: IncomeService,
     private firestore: AngularFirestore,
-    private breakpointObserver: BreakpointObserver
+    private breakpointObserver: BreakpointObserver,
+    private userService: UserService
   ) {}
 
   isSmallScreen = false; // default value
@@ -27,8 +30,10 @@ export class IncomeComponent {
   incomeData: Income[] = [];
   totalAmount: number = 0; // Initialize totalAmount
   uid: string | undefined;
+  userData: User | null = null;
 
   private unsubscribe$ = new Subject<void>();
+  isEditProfile = false;
   isLoading = false;
   isFilled = false;
   isEmpty = false;
@@ -41,7 +46,17 @@ export class IncomeComponent {
     { value: 'Business', viewValue: 'Business' },
     { value: 'Gifts', viewValue: 'Gifts' },
   ];
+  get displayName(): string | undefined {
+    return this.userData?.displayName;
+  }
 
+  get imageUrl(): string | undefined {
+    return this.userData?.imageUrl;
+  }
+
+  get emailAddress(): string | undefined {
+    return this.userData?.email;
+  }
   ngOnInit() {
     this.uid = this.auth.getUserId();
     console.log('User ID: ' + this.uid);
@@ -63,8 +78,33 @@ export class IncomeComponent {
 
     this.isFilled = true;
     this.getIncome();
+    this.getUserInfo();
   }
+  getUserInfo() {
+    if (!this.uid) {
+      console.error('Cannot get user info, not currently signed in');
+      return;
+    }
 
+    this.userService
+      .readUser(this.uid)
+      .pipe(takeUntil(this.unsubscribe$))
+      .subscribe(
+        (user: User) => {
+          // Ensure 'user' is typed as an object, 'any' should be changed to the actual type of your user object
+          console.log('User data:', user); // Log user data to verify structure
+          if (user) {
+            this.userData = user;
+            console.log('Existing User data:', this.userData); // Should not show error now
+          } else {
+            console.warn('No user data found for UID:', this.uid);
+          }
+        },
+        (error) => {
+          console.error('Error fetching user info:', error);
+        }
+      );
+  }
   ngOnDestroy(): void {
     console.log('DashboardComponent destroyed');
     this.unsubscribe$.next();
@@ -167,17 +207,8 @@ export class IncomeComponent {
   }
 
   editProfile() {
-    Swal.fire({
-      title: 'Edit Profile',
-      input: 'text',
-      inputLabel: 'Display Name',
-      inputPlaceholder: 'Enter your display name',
-      showCancelButton: true,
-      confirmButtonColor: '#3085d6',
-      cancelButtonColor: '#d33',
-      confirmButtonText: 'Yes',
-      backdrop: false,
-    });
+    this.isEditProfile = !this.isEditProfile;
+    console.log('Edit profile:', this.isEditProfile);
   }
   deleteIncome(id: string) {
     if (!id) {

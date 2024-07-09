@@ -25,6 +25,8 @@ export class EditProfileComponent {
   ) {}
   @Output() toggleEditProfile = new EventEmitter<void>();
   @Input() displayName: string | undefined;
+  @Input() existingImageUrl: string | undefined;
+  @Input() emailAddress: string | undefined;
   @ViewChild('expenseForm') editProfileForm!: NgForm;
 
   uid: string | undefined;
@@ -53,14 +55,81 @@ export class EditProfileComponent {
         finalize(() => {
           fileRef.getDownloadURL().subscribe((url) => {
             this.imageUrl = url;
-            // Save imageURL to user's data in Firestore or elsewhere
-            // Example: this.userService.updateUserImage(userId, url);
+            console.log('Image URL:', url);
+            this.userService
+              .createUser(this.uid, { imageUrl: url })
+              .then(() => {
+                this.uploadError = null;
+              })
+              .catch((error) => {
+                console.error('Error writing document: ', error);
+              });
           });
         })
       )
       .subscribe(null, (error) => {
         this.uploadError = 'Error uploading image: ' + error;
       });
+  }
+
+  openImageUpload() {
+    Swal.fire({
+      title: 'Change Profile Picture',
+      html: `
+      <label for="fileInput" style="cursor: pointer;">
+        <img id="previewImage" src="assets/upload-image.webp" height="60" alt="Upload Image" style="border-radius: 50%; border: #000000 solid 1px; cursor: pointer;"/>
+      </label>
+    `,
+      showCancelButton: true,
+      confirmButtonText: 'Upload',
+      preConfirm: () => {
+        if (!this.selectedFile) {
+          Swal.showValidationMessage('Please select a file to upload.');
+          return false;
+        } else if (!this.isValidFileType(this.selectedFile.type)) {
+          Swal.showValidationMessage('Only JPG and PNG files are allowed.');
+          return false;
+        }
+        return true;
+      },
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.uploadImage();
+      }
+    });
+
+    // Add event listener to file input for preview functionality
+    const fileInput = document.getElementById('fileInput') as HTMLInputElement;
+    const previewImage = document.getElementById(
+      'previewImage'
+    ) as HTMLImageElement;
+
+    fileInput.addEventListener('change', (event) => {
+      const file = (event.target as HTMLInputElement).files?.[0];
+      if (file && this.isValidFileType(file.type)) {
+        const reader = new FileReader();
+        reader.onload = () => {
+          if (typeof reader.result === 'string') {
+            previewImage.src = reader.result;
+          }
+        };
+        reader.readAsDataURL(file);
+        this.selectedFile = file;
+      } else {
+        this.selectedFile = null;
+        previewImage.src = 'assets/upload-image.webp';
+        Swal.showValidationMessage('Only JPG and PNG files are allowed.');
+      }
+    });
+  }
+
+  isValidFileType(fileType: string): boolean {
+    return (
+      fileType === 'image/jpeg' ||
+      fileType === 'image/png' ||
+      fileType === 'image/jpg' ||
+      fileType === 'image/webp'
+    );
   }
 
   ngOnInit() {

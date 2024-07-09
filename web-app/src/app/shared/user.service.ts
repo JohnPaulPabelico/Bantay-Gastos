@@ -1,8 +1,5 @@
 import { Injectable } from '@angular/core';
-import {
-  AngularFirestore,
-  DocumentReference,
-} from '@angular/fire/compat/firestore';
+import { AngularFirestore } from '@angular/fire/compat/firestore';
 import { Observable } from 'rxjs';
 
 @Injectable({
@@ -24,8 +21,4 @@ export class UserService {
       .doc(uid)
       .valueChanges({ idField: 'id' });
   }
-
-  // deleteUser(id: string): Promise<void> {
-  //   return this.firestore.collection('income').doc(id).delete();
-  // }
 }
