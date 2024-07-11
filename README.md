@@ -1,6 +1,6 @@
 <h1 align="center" id="title">Bantay Gastos</h1>
 
-<p align="center"><img src="https://socialify.git.ci/JohnPaulPabelico/Bantay-Gastos/image?description=1&amp;descriptionEditable=A%20finance%20tracker%20web%20application%20created%20using%20Angular.&amp;font=Rokkitt&amp;logo=https%3A%2F%2Fi.imgur.com%2FLb6DSGN.png&amp;name=1&amp;pattern=Solid&amp;stargazers=1&amp;theme=Auto" alt="project-image"></p>
+<p align="center"><img src="https://socialify.git.ci/JohnPaulPabelico/Bantay-Gastos/image?description=1&amp;descriptionEditable=A%20finance%20tracker%20web%20application%20created%20using%20Angular.&amp;font=Rokkitt&amp;logo=https%3A%2F%2Fi.imgur.com%2FLb6DSGN.png&amp;name=1&amp;pattern=Solid&amp;theme=Auto" alt="project-image"></p>
 
 <p id="description">Bantay Gastos is a finance tracker web application created in Angular to track your expenses and income. The web-app also provides charts as analysis for your financing. Furthermore it also has an authentication functionality provided by firebase to store data in the cloud.</p>
 
