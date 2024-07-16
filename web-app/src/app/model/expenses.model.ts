@@ -1,4 +1,4 @@
-export type Expenses = {
+export interface Expenses {
   id?: string;
   title: string;
   amount: number;
@@ -8,4 +8,4 @@ export type Expenses = {
   date: Date;
   description: string;
   createdById: string;
-};
+}
