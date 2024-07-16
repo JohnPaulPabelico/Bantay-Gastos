@@ -1,14 +1,16 @@
-import { Component, ViewChild, OnInit } from '@angular/core';
+import { Component, ViewChild } from '@angular/core';
 import { AuthService } from 'src/app/shared/auth.service';
-import { ExpenseService } from 'src/app/shared/expense.service';
-import { Subject, takeUntil, tap, timestamp } from 'rxjs';
+import { Observable, Subject, takeUntil, tap } from 'rxjs';
 import { NgForm } from '@angular/forms';
-import { AngularFirestore } from '@angular/fire/compat/firestore';
-import { Expenses } from 'src/app/model/expenses';
+import { Expenses } from 'src/app/model/expenses.model';
 import Swal from 'sweetalert2';
 import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 import { User } from 'src/app/model/users';
 import { UserService } from 'src/app/shared/user.service';
+import * as expensesActions from 'src/app/state/expenses/expenses.actions';
+import * as fromExpenses from 'src/app/state/expenses/expenses.selectors';
+import { Store } from '@ngrx/store';
+import * as fromRoot from 'src/app/state/app.state';
 
 @Component({
   selector: 'app-expenses',
@@ -17,12 +19,16 @@ import { UserService } from 'src/app/shared/user.service';
 })
 export class ExpensesComponent {
   @ViewChild('expenseForm') expenseForm!: NgForm; // Non-null assertion operator// Reference to the form
+
+  expenses$!: Observable<Expenses[]>;
+  // loading$!: Observable<boolean>;
+  // error$!: Observable<any>;
+
   constructor(
     private auth: AuthService,
-    private expenseService: ExpenseService,
-    private firestore: AngularFirestore,
     private breakpointObserver: BreakpointObserver,
-    private userService: UserService
+    private userService: UserService,
+    private store: Store<fromRoot.AppState>
   ) {}
 
   isSmallScreen = false; // default value
@@ -47,18 +53,6 @@ export class ExpensesComponent {
     { value: 'Bills', viewValue: 'Bills' },
     { value: 'Transportation', viewValue: 'Transportation' },
   ];
-
-  get imageUrl(): string | undefined {
-    return this.userData?.imageUrl;
-  }
-
-  get displayName(): string | undefined {
-    return this.userData?.displayName;
-  }
-
-  get emailAddress(): string | undefined {
-    return this.userData?.email;
-  }
 
   ngOnInit() {
     this.uid = this.auth.getUserId();
@@ -112,6 +106,18 @@ export class ExpensesComponent {
     console.log('DashboardComponent destroyed');
     this.unsubscribe$.next();
     this.unsubscribe$.complete();
+  }
+
+  get imageUrl(): string | undefined {
+    return this.userData?.imageUrl;
+  }
+
+  get displayName(): string | undefined {
+    return this.userData?.displayName;
+  }
+
+  get emailAddress(): string | undefined {
+    return this.userData?.email;
   }
 
   logout() {
@@ -168,16 +174,7 @@ export class ExpensesComponent {
     this.isFilled = true;
     console.log('Filled in fields:', expensesData);
 
-    this.expenseService
-      .createExpense(expensesData)
-      .then((docRef) => {
-        // Update the document with the generated ID
-        expensesData.id = docRef.id;
-        form.reset();
-      })
-      .catch((error) => {
-        console.error('Error writing document: ', error);
-      });
+    this.store.dispatch(expensesActions.addExpense({ expense: expensesData }));
   }
 
   getExpense() {
@@ -187,8 +184,10 @@ export class ExpensesComponent {
       return;
     }
 
-    this.expenseService
-      .readExpense(this.uid)
+    this.store.dispatch(expensesActions.loadExpenses({ uid: this.uid }));
+    this.expenses$ = this.store.select(fromExpenses.selectAllExpenses);
+
+    this.expenses$
       .pipe(
         takeUntil(this.unsubscribe$),
         tap(() => console.log('expenses subscription unsubscribed'))
@@ -229,21 +228,7 @@ export class ExpensesComponent {
       backdrop: false,
     }).then((result) => {
       if (result.isConfirmed) {
-        this.firestore
-          .collection('expenses')
-          .doc(id)
-          .delete()
-          .then(() => {
-            console.log('Document successfully deleted!');
-            // Remove from local array
-            this.expenseData = this.expenseData.filter(
-              (expense) => expense.id !== id
-            );
-            this.calculateTotalAmount(); // Recalculate total amount
-          })
-          .catch((error) => {
-            console.error('Error removing document: ', error);
-          });
+        this.store.dispatch(expensesActions.deleteExpense({ id }));
         Swal.fire({
           title: 'Expense deleted!',
           icon: 'success',
