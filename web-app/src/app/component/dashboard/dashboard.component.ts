@@ -1,7 +1,7 @@
 import { UserService } from 'src/app/shared/user.service';
 import { Component } from '@angular/core';
 import { AuthService } from 'src/app/shared/auth.service';
-import { ExpenseService } from 'src/app/shared/expense.service';
+import { ExpenseService } from '../../shared/expense.service';
 import { IncomeService } from 'src/app/shared/income.service';
 import { Subject, combineLatest, takeUntil, tap } from 'rxjs';
 import { Chart, registerables } from 'chart.js';
