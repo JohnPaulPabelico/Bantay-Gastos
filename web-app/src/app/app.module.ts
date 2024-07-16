@@ -31,6 +31,11 @@ import { ScrollingModule } from '@angular/cdk/scrolling';
 import { TruncatePipe } from './truncate.pipe';
 import { MatMenuModule } from '@angular/material/menu';
 import { EditProfileComponent } from './edit-profile/edit-profile.component';
+import { StoreModule } from '@ngrx/store';
+import { StoreDevtoolsModule } from '@ngrx/store-devtools';
+import { EffectsModule } from '@ngrx/effects';
+import { expensesReducer } from './state/expenses/expenses.reducer';
+import { ExpensesEffects } from './state/expenses/expenses.effects';
 
 @NgModule({
   declarations: [
@@ -67,6 +72,12 @@ import { EditProfileComponent } from './edit-profile/edit-profile.component';
     MatNativeDateModule,
     MatSelectModule,
     MatMenuModule,
+    StoreModule.forRoot({ expenses: expensesReducer }),
+    EffectsModule.forRoot([ExpensesEffects]),
+    StoreDevtoolsModule.instrument({
+      maxAge: 25,
+      logOnly: environment.production,
+    }),
   ],
   providers: [],
   bootstrap: [AppComponent],
