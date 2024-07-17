@@ -8,7 +8,7 @@ import { Chart, registerables } from 'chart.js';
 import { groupBy } from 'lodash';
 Chart.register(...registerables);
 import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
-import { User } from 'src/app/model/users';
+import { User } from 'src/app/model/user.model';
 
 @Component({
   selector: 'app-dashboard',
