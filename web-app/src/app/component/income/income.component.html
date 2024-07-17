@@ -101,15 +101,17 @@
         </mat-menu>
       </div>
     </div>
-    <div class="total-income-container">
-      <div class="total-income">
-        Total Income:
-        <span *ngIf="!isLoading" class="total-income-amount"
-          >&nbsp;-{{ totalAmount | number : "1.0" : "en-US" }}</span
-        >
-        <span *ngIf="isLoading">&nbsp; ...</span>
+    <ng-container *ngIf="status$ | async as status">
+      <div class="total-income-container">
+        <div class="total-income">
+          Total Income:
+          <span *ngIf="status === 'success'" class="total-income-amount">
+            &nbsp;{{ totalAmount$ | async | number : "1.0" : "en-US" }}
+          </span>
+          <span *ngIf="status === 'loading'">&nbsp; ...</span>
+        </div>
       </div>
-    </div>
+    </ng-container>
     <div class="transaction-container">
       <div class="income-panel-container">
         <div class="transaction-title">
@@ -203,69 +205,74 @@
           </mat-card>
         </div>
         <div class="income-item-container" style="margin-top: 20px">
-          <div class="loading-container" *ngIf="isLoading">
-            <img
-              src="https://media.tenor.com/kMCwoAD4RNAAAAAi/loading-gif-loading.gif"
-              height="100"
-              class="logo"
-              *ngIf="isLoading"
-            />
-            <div class="loading-container">
-              <div *ngIf="!isLoading && isEmpty">
-                <span style="font-size: xx-large">Add an income!</span>
+          <ng-container *ngIf="status$ | async as status">
+            <div class="loading-container" *ngIf="status === 'loading'">
+              <img
+                src="https://media.tenor.com/kMCwoAD4RNAAAAAi/loading-gif-loading.gif"
+                height="100"
+                class="logo"
+                *ngIf="status === 'loading'"
+              />
+            </div>
+            <div
+              class="loading-container"
+              *ngIf="status === 'success' && !(income$ | async)?.length"
+            >
+              <div>
+                <span style="font-size: xx-large"> Add an income!</span>
               </div>
             </div>
-          </div>
-          <div *ngIf="!isLoading && !isEmpty">
-            <mat-list id="income-list" *ngFor="let income of incomeData">
-              <mat-list-item class="income-item">
-                <div class="income-item-content">
-                  <div>
-                    <div class="income-item-title-container">
-                      <span class="category">{{ income.category }}</span>
-                      <div class="income-item-title">
-                        <span>{{ income.title | truncate : 13 }}</span>
-                      </div>
-                      <div
-                        class="income-item-details"
-                        style="margin-left: auto"
-                      >
-                        <button
-                          class="delete"
-                          (click)="deleteIncome(income.id || '')"
+            <div *ngIf="status === 'success' && (income$ | async)?.length">
+              <mat-list id="income-list" *ngFor="let income of income$ | async">
+                <mat-list-item class="income-item">
+                  <div class="income-item-content">
+                    <div>
+                      <div class="income-item-title-container">
+                        <span class="category">{{ income.category }}</span>
+                        <div class="income-item-title">
+                          <span>{{ income.title | truncate : 13 }}</span>
+                        </div>
+                        <div
+                          class="income-item-details"
+                          style="margin-left: auto"
                         >
-                          <mat-icon fontIcon="delete"></mat-icon>
-                        </button>
-                      </div>
-                    </div>
-                    <div class="income-item-details-container">
-                      <div class="income-item-details">
-                        <div class="amount">
-                          <mat-icon fontIcon="attach_money"></mat-icon>
-                          <span>
-                            -{{
-                              income.amount | number : "1.0" : "en-US"
-                            }}</span
+                          <button
+                            class="delete"
+                            (click)="deleteIncome(income.id || '')"
                           >
+                            <mat-icon fontIcon="delete"></mat-icon>
+                          </button>
                         </div>
-                        <div class="date">
-                          <mat-icon fontIcon="calendar_today"></mat-icon>
-                          <span>&nbsp; {{ income.dateString }}</span>
-                        </div>
-                        <div class="description">
-                          <mat-icon fontIcon="chat_bubble"></mat-icon>
-                          <span
-                            >&nbsp;
-                            {{ income.description | truncate : 23 }}
-                          </span>
+                      </div>
+                      <div class="income-item-details-container">
+                        <div class="income-item-details">
+                          <div class="amount">
+                            <mat-icon fontIcon="attach_money"></mat-icon>
+                            <span>
+                              -{{
+                                income.amount | number : "1.0" : "en-US"
+                              }}</span
+                            >
+                          </div>
+                          <div class="date">
+                            <mat-icon fontIcon="calendar_today"></mat-icon>
+                            <span>&nbsp; {{ income.dateString }}</span>
+                          </div>
+                          <div class="description">
+                            <mat-icon fontIcon="chat_bubble"></mat-icon>
+                            <span
+                              >&nbsp;
+                              {{ income.description | truncate : 23 }}
+                            </span>
+                          </div>
                         </div>
                       </div>
                     </div>
                   </div>
-                </div>
-              </mat-list-item>
-            </mat-list>
-          </div>
+                </mat-list-item>
+              </mat-list>
+            </div>
+          </ng-container>
         </div>
       </div>
     </div>
