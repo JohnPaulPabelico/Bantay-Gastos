@@ -101,15 +101,17 @@
         </mat-menu>
       </div>
     </div>
-    <div class="total-expenses-container">
-      <div class="total-expenses">
-        Total Expenses:
-        <span *ngIf="!isLoading" class="total-expenses-amount"
-          >&nbsp;-{{ totalAmount | number : "1.0" : "en-US" }}</span
-        >
-        <span *ngIf="isLoading">&nbsp; ...</span>
+    <ng-container *ngIf="status$ | async as status">
+      <div class="total-expenses-container">
+        <div class="total-expenses">
+          Total Expenses:
+          <span *ngIf="status === 'success'" class="total-expenses-amount">
+            &nbsp;-{{ totalAmount$ | async | number : "1.0" : "en-US" }}
+          </span>
+          <span *ngIf="status === 'loading'">&nbsp; ...</span>
+        </div>
       </div>
-    </div>
+    </ng-container>
     <div class="transaction-container">
       <div class="expenses-panel-container">
         <div class="transaction-title">
@@ -203,69 +205,78 @@
           </mat-card>
         </div>
         <div class="expenses-item-container" style="margin-top: 20px">
-          <div class="loading-container" *ngIf="isLoading">
-            <img
-              src="https://media.tenor.com/kMCwoAD4RNAAAAAi/loading-gif-loading.gif"
-              height="100"
-              class="logo"
-              *ngIf="isLoading"
-            />
-            <div class="loading-container">
-              <div *ngIf="!isLoading && isEmpty">
+          <ng-container *ngIf="status$ | async as status">
+            <div class="loading-container" *ngIf="status === 'loading'">
+              <img
+                src="https://media.tenor.com/kMCwoAD4RNAAAAAi/loading-gif-loading.gif"
+                height="100"
+                class="logo"
+                *ngIf="status === 'loading'"
+              />
+            </div>
+            <div
+              class="loading-container"
+              *ngIf="status === 'success' && !(expenses$ | async)?.length"
+            >
+              <div>
                 <span style="font-size: xx-large">Add an expense!</span>
               </div>
             </div>
-          </div>
-          <div *ngIf="!isLoading && !isEmpty">
-            <mat-list id="expenses-list" *ngFor="let expense of expenseData">
-              <mat-list-item class="expenses-item">
-                <div class="expenses-item-content">
-                  <div>
-                    <div class="expenses-item-title-container">
-                      <span class="category">{{ expense.category }}</span>
-                      <div class="expenses-item-title">
-                        <span>{{ expense.title }}</span>
-                      </div>
-                      <div
-                        class="expenses-item-details"
-                        style="margin-left: auto"
-                      >
-                        <button
-                          class="delete"
-                          (click)="deleteExpense(expense.id || '')"
+
+            <div *ngIf="status === 'success' && (expenses$ | async)?.length">
+              <mat-list
+                id="expenses-list"
+                *ngFor="let expense of expenses$ | async"
+              >
+                <mat-list-item class="expenses-item">
+                  <div class="expenses-item-content">
+                    <div>
+                      <div class="expenses-item-title-container">
+                        <span class="category">{{ expense.category }}</span>
+                        <div class="expenses-item-title">
+                          <span>{{ expense.title }}</span>
+                        </div>
+                        <div
+                          class="expenses-item-details"
+                          style="margin-left: auto"
                         >
-                          <mat-icon fontIcon="delete"></mat-icon>
-                        </button>
-                      </div>
-                    </div>
-                    <div class="expenses-item-details-container">
-                      <div class="expenses-item-details">
-                        <div class="amount">
-                          <mat-icon fontIcon="attach_money"></mat-icon>
-                          <span>
-                            -{{
-                              expense.amount | number : "1.0" : "en-US"
-                            }}</span
+                          <button
+                            class="delete"
+                            (click)="deleteExpense(expense.id || '')"
                           >
+                            <mat-icon fontIcon="delete"></mat-icon>
+                          </button>
                         </div>
-                        <div class="date">
-                          <mat-icon fontIcon="calendar_today"></mat-icon>
-                          <span>&nbsp; {{ expense.dateString }}</span>
-                        </div>
-                        <div class="description">
-                          <mat-icon fontIcon="chat_bubble"></mat-icon>
-                          <span
-                            >&nbsp;
-                            {{ expense.description | truncate : 20 }}
-                          </span>
+                      </div>
+                      <div class="expenses-item-details-container">
+                        <div class="expenses-item-details">
+                          <div class="amount">
+                            <mat-icon fontIcon="attach_money"></mat-icon>
+                            <span>
+                              -{{
+                                expense.amount | number : "1.0" : "en-US"
+                              }}</span
+                            >
+                          </div>
+                          <div class="date">
+                            <mat-icon fontIcon="calendar_today"></mat-icon>
+                            <span>&nbsp; {{ expense.dateString }}</span>
+                          </div>
+                          <div class="description">
+                            <mat-icon fontIcon="chat_bubble"></mat-icon>
+                            <span
+                              >&nbsp;
+                              {{ expense.description | truncate : 20 }}
+                            </span>
+                          </div>
                         </div>
                       </div>
                     </div>
                   </div>
-                </div>
-              </mat-list-item>
-            </mat-list>
-          </div>
+                </mat-list-item>
+              </mat-list>
+            </div>
+          </ng-container>
         </div>
       </div>
     </div>

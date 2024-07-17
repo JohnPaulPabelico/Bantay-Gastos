@@ -1,11 +1,11 @@
 import { Component, ViewChild } from '@angular/core';
 import { AuthService } from 'src/app/shared/auth.service';
-import { Observable, Subject, takeUntil, tap } from 'rxjs';
+import { map, Observable, Subject, takeUntil, tap } from 'rxjs';
 import { NgForm } from '@angular/forms';
 import { Expenses } from 'src/app/model/expenses.model';
 import Swal from 'sweetalert2';
 import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
-import { User } from 'src/app/model/users';
+import { User } from 'src/app/model/user.model';
 import { UserService } from 'src/app/shared/user.service';
 import * as expensesActions from 'src/app/state/expenses/expenses.actions';
 import * as fromExpenses from 'src/app/state/expenses/expenses.selectors';
@@ -21,8 +21,8 @@ export class ExpensesComponent {
   @ViewChild('expenseForm') expenseForm!: NgForm; // Non-null assertion operator// Reference to the form
 
   expenses$!: Observable<Expenses[]>;
-  // loading$!: Observable<boolean>;
-  // error$!: Observable<any>;
+  status$!: Observable<string>;
+  totalAmount$!: Observable<number>;
 
   constructor(
     private auth: AuthService,
@@ -33,8 +33,6 @@ export class ExpensesComponent {
 
   isSmallScreen = false; // default value
   sideNavMode: 'over' | 'side' = 'side';
-  expenseData: Expenses[] = [];
-  totalAmount: number = 0;
   uid: string | undefined;
   userData: User | null = null;
 
@@ -42,7 +40,6 @@ export class ExpensesComponent {
   isEditProfile = false;
   isLoading = false;
   isFilled = false;
-  isEmpty = false;
 
   selectedValue: string = '';
   categories = [
@@ -74,10 +71,11 @@ export class ExpensesComponent {
       });
 
     this.isFilled = true;
-    this.getExpense();
     this.getUserInfo();
+    this.getExpense();
   }
   getUserInfo() {
+    this.isLoading = true;
     if (!this.uid) {
       console.error('Cannot get user info, not currently signed in');
       return;
@@ -88,11 +86,11 @@ export class ExpensesComponent {
       .pipe(takeUntil(this.unsubscribe$))
       .subscribe(
         (user: User) => {
-          // Ensure 'user' is typed as an object, 'any' should be changed to the actual type of your user object
-          console.log('User data:', user); // Log user data to verify structure
+          console.log('User data:', user);
           if (user) {
             this.userData = user;
-            console.log('Existing User data:', this.userData); // Should not show error now
+            this.isLoading = false;
+            console.log('Existing User data:', this.userData);
           } else {
             console.warn('No user data found for UID:', this.uid);
           }
@@ -122,13 +120,6 @@ export class ExpensesComponent {
 
   logout() {
     this.auth.logout();
-  }
-
-  calculateTotalAmount() {
-    this.totalAmount = this.expenseData.reduce(
-      (accumulator, currentValue) => accumulator + currentValue.amount,
-      0
-    );
   }
 
   addExpense(form: NgForm) {
@@ -178,7 +169,6 @@ export class ExpensesComponent {
   }
 
   getExpense() {
-    this.isLoading = true;
     if (!this.uid) {
       console.error('Cannot get expenses, user ID not found');
       return;
@@ -186,24 +176,16 @@ export class ExpensesComponent {
 
     this.store.dispatch(expensesActions.loadExpenses({ uid: this.uid }));
     this.expenses$ = this.store.select(fromExpenses.selectAllExpenses);
+    this.status$ = this.store.select(fromExpenses.selectStatus);
 
-    this.expenses$
-      .pipe(
-        takeUntil(this.unsubscribe$),
-        tap(() => console.log('expenses subscription unsubscribed'))
+    this.totalAmount$ = this.expenses$.pipe(
+      map((expenses: any[]) =>
+        expenses.reduce(
+          (accumulator, currentValue) => accumulator + currentValue.amount,
+          0
+        )
       )
-      .subscribe(
-        (expenses: any[]) => {
-          this.isLoading = false;
-          this.expenseData = expenses;
-          this.isEmpty = expenses.length === 0;
-          console.log('Fetched expenses:', this.expenseData);
-          this.calculateTotalAmount();
-        },
-        (error) => {
-          console.error('Error fetching expenses:', error);
-        }
-      );
+    );
   }
 
   editProfile() {
