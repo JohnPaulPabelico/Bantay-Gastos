@@ -1,14 +1,16 @@
-import { Component, ViewChild, OnInit } from '@angular/core';
+import { Component, ViewChild } from '@angular/core';
 import { AuthService } from 'src/app/shared/auth.service';
-import { ExpenseService } from 'src/app/shared/expense.service';
-import { Subject, takeUntil, tap, timestamp } from 'rxjs';
+import { map, Observable, Subject, takeUntil, tap } from 'rxjs';
 import { NgForm } from '@angular/forms';
-import { AngularFirestore } from '@angular/fire/compat/firestore';
-import { Expenses } from 'src/app/model/expenses';
+import { Expenses } from 'src/app/model/expenses.model';
 import Swal from 'sweetalert2';
 import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
-import { User } from 'src/app/model/users';
+import { User } from 'src/app/model/user.model';
 import { UserService } from 'src/app/shared/user.service';
+import * as expensesActions from 'src/app/state/expenses/expenses.actions';
+import * as fromExpenses from 'src/app/state/expenses/expenses.selectors';
+import { Store } from '@ngrx/store';
+import * as fromRoot from 'src/app/state/app.state';
 
 @Component({
   selector: 'app-expenses',
@@ -17,18 +19,20 @@ import { UserService } from 'src/app/shared/user.service';
 })
 export class ExpensesComponent {
   @ViewChild('expenseForm') expenseForm!: NgForm; // Non-null assertion operator// Reference to the form
+
+  expenses$!: Observable<Expenses[]>;
+  status$!: Observable<string>;
+  totalAmount$!: Observable<number>;
+
   constructor(
     private auth: AuthService,
-    private expenseService: ExpenseService,
-    private firestore: AngularFirestore,
     private breakpointObserver: BreakpointObserver,
-    private userService: UserService
+    private userService: UserService,
+    private store: Store<fromRoot.AppState>
   ) {}
 
   isSmallScreen = false; // default value
   sideNavMode: 'over' | 'side' = 'side';
-  expenseData: Expenses[] = [];
-  totalAmount: number = 0;
   uid: string | undefined;
   userData: User | null = null;
 
@@ -36,7 +40,6 @@ export class ExpensesComponent {
   isEditProfile = false;
   isLoading = false;
   isFilled = false;
-  isEmpty = false;
 
   selectedValue: string = '';
   categories = [
@@ -47,18 +50,6 @@ export class ExpensesComponent {
     { value: 'Bills', viewValue: 'Bills' },
     { value: 'Transportation', viewValue: 'Transportation' },
   ];
-
-  get imageUrl(): string | undefined {
-    return this.userData?.imageUrl;
-  }
-
-  get displayName(): string | undefined {
-    return this.userData?.displayName;
-  }
-
-  get emailAddress(): string | undefined {
-    return this.userData?.email;
-  }
 
   ngOnInit() {
     this.uid = this.auth.getUserId();
@@ -80,10 +71,11 @@ export class ExpensesComponent {
       });
 
     this.isFilled = true;
-    this.getExpense();
     this.getUserInfo();
+    this.getExpense();
   }
   getUserInfo() {
+    this.isLoading = true;
     if (!this.uid) {
       console.error('Cannot get user info, not currently signed in');
       return;
@@ -94,11 +86,11 @@ export class ExpensesComponent {
       .pipe(takeUntil(this.unsubscribe$))
       .subscribe(
         (user: User) => {
-          // Ensure 'user' is typed as an object, 'any' should be changed to the actual type of your user object
-          console.log('User data:', user); // Log user data to verify structure
+          console.log('User data:', user);
           if (user) {
             this.userData = user;
-            console.log('Existing User data:', this.userData); // Should not show error now
+            this.isLoading = false;
+            console.log('Existing User data:', this.userData);
           } else {
             console.warn('No user data found for UID:', this.uid);
           }
@@ -114,15 +106,20 @@ export class ExpensesComponent {
     this.unsubscribe$.complete();
   }
 
-  logout() {
-    this.auth.logout();
+  get imageUrl(): string | undefined {
+    return this.userData?.imageUrl;
   }
 
-  calculateTotalAmount() {
-    this.totalAmount = this.expenseData.reduce(
-      (accumulator, currentValue) => accumulator + currentValue.amount,
-      0
-    );
+  get displayName(): string | undefined {
+    return this.userData?.displayName;
+  }
+
+  get emailAddress(): string | undefined {
+    return this.userData?.email;
+  }
+
+  logout() {
+    this.auth.logout();
   }
 
   addExpense(form: NgForm) {
@@ -168,43 +165,27 @@ export class ExpensesComponent {
     this.isFilled = true;
     console.log('Filled in fields:', expensesData);
 
-    this.expenseService
-      .createExpense(expensesData)
-      .then((docRef) => {
-        // Update the document with the generated ID
-        expensesData.id = docRef.id;
-        form.reset();
-      })
-      .catch((error) => {
-        console.error('Error writing document: ', error);
-      });
+    this.store.dispatch(expensesActions.addExpense({ expense: expensesData }));
   }
 
   getExpense() {
-    this.isLoading = true;
     if (!this.uid) {
       console.error('Cannot get expenses, user ID not found');
       return;
     }
 
-    this.expenseService
-      .readExpense(this.uid)
-      .pipe(
-        takeUntil(this.unsubscribe$),
-        tap(() => console.log('expenses subscription unsubscribed'))
+    this.store.dispatch(expensesActions.loadExpenses({ uid: this.uid }));
+    this.expenses$ = this.store.select(fromExpenses.selectAllExpenses);
+    this.status$ = this.store.select(fromExpenses.selectStatus);
+
+    this.totalAmount$ = this.expenses$.pipe(
+      map((expenses: any[]) =>
+        expenses.reduce(
+          (accumulator, currentValue) => accumulator + currentValue.amount,
+          0
+        )
       )
-      .subscribe(
-        (expenses: any[]) => {
-          this.isLoading = false;
-          this.expenseData = expenses;
-          this.isEmpty = expenses.length === 0;
-          console.log('Fetched expenses:', this.expenseData);
-          this.calculateTotalAmount();
-        },
-        (error) => {
-          console.error('Error fetching expenses:', error);
-        }
-      );
+    );
   }
 
   editProfile() {
@@ -229,21 +210,7 @@ export class ExpensesComponent {
       backdrop: false,
     }).then((result) => {
       if (result.isConfirmed) {
-        this.firestore
-          .collection('expenses')
-          .doc(id)
-          .delete()
-          .then(() => {
-            console.log('Document successfully deleted!');
-            // Remove from local array
-            this.expenseData = this.expenseData.filter(
-              (expense) => expense.id !== id
-            );
-            this.calculateTotalAmount(); // Recalculate total amount
-          })
-          .catch((error) => {
-            console.error('Error removing document: ', error);
-          });
+        this.store.dispatch(expensesActions.deleteExpense({ id }));
         Swal.fire({
           title: 'Expense deleted!',
           icon: 'success',

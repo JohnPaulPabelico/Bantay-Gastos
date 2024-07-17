@@ -1,4 +1,4 @@
-export type Expenses = {
+export interface Income {
   id?: string;
   title: string;
   amount: number;

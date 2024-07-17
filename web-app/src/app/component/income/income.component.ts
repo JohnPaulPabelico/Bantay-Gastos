@@ -1,14 +1,16 @@
 import { Component, ViewChild } from '@angular/core';
 import { AuthService } from 'src/app/shared/auth.service';
-import { IncomeService } from 'src/app/shared/income.service';
-import { Subject, takeUntil, tap, timestamp } from 'rxjs';
+import { map, Observable, Subject, takeUntil, tap } from 'rxjs';
 import { NgForm } from '@angular/forms';
-import { AngularFirestore } from '@angular/fire/compat/firestore';
-import { Income } from 'src/app/model/income';
+import { Income } from 'src/app/model/income.model';
 import Swal from 'sweetalert2';
 import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 import { UserService } from 'src/app/shared/user.service';
-import { User } from 'src/app/model/users';
+import { User } from 'src/app/model/user.model';
+import * as incomeActions from 'src/app/state/income/income.actions';
+import * as fromIncome from 'src/app/state/income/income.selectors';
+import { Store } from '@ngrx/store';
+import * as fromRoot from 'src/app/state/app.state';
 
 @Component({
   selector: 'app-income',
@@ -17,18 +19,20 @@ import { User } from 'src/app/model/users';
 })
 export class IncomeComponent {
   @ViewChild('incomeForm') incomeForm!: NgForm; // Non-null assertion operator// Reference to the form
+
+  income$!: Observable<Income[]>;
+  status$!: Observable<string>;
+  totalAmount$!: Observable<number>;
+
   constructor(
     private auth: AuthService,
-    private incomeService: IncomeService,
-    private firestore: AngularFirestore,
     private breakpointObserver: BreakpointObserver,
-    private userService: UserService
+    private userService: UserService,
+    private store: Store<fromRoot.AppState>
   ) {}
 
   isSmallScreen = false; // default value
   sideNavMode: 'over' | 'side' = 'side';
-  incomeData: Income[] = [];
-  totalAmount: number = 0; // Initialize totalAmount
   uid: string | undefined;
   userData: User | null = null;
 
@@ -36,7 +40,6 @@ export class IncomeComponent {
   isEditProfile = false;
   isLoading = false;
   isFilled = false;
-  isEmpty = false;
 
   selectedValue: string = '';
   categories = [
@@ -46,17 +49,7 @@ export class IncomeComponent {
     { value: 'Business', viewValue: 'Business' },
     { value: 'Gifts', viewValue: 'Gifts' },
   ];
-  get displayName(): string | undefined {
-    return this.userData?.displayName;
-  }
 
-  get imageUrl(): string | undefined {
-    return this.userData?.imageUrl;
-  }
-
-  get emailAddress(): string | undefined {
-    return this.userData?.email;
-  }
   ngOnInit() {
     this.uid = this.auth.getUserId();
     console.log('User ID: ' + this.uid);
@@ -77,10 +70,11 @@ export class IncomeComponent {
       });
 
     this.isFilled = true;
-    this.getIncome();
     this.getUserInfo();
+    this.getIncome();
   }
   getUserInfo() {
+    this.isLoading = true;
     if (!this.uid) {
       console.error('Cannot get user info, not currently signed in');
       return;
@@ -95,6 +89,7 @@ export class IncomeComponent {
           console.log('User data:', user); // Log user data to verify structure
           if (user) {
             this.userData = user;
+            this.isLoading = false;
             console.log('Existing User data:', this.userData); // Should not show error now
           } else {
             console.warn('No user data found for UID:', this.uid);
@@ -111,15 +106,20 @@ export class IncomeComponent {
     this.unsubscribe$.complete();
   }
 
-  logout() {
-    this.auth.logout();
+  get displayName(): string | undefined {
+    return this.userData?.displayName;
   }
 
-  calculateTotalAmount() {
-    this.totalAmount = this.incomeData.reduce(
-      (accumulator, currentValue) => accumulator + currentValue.amount,
-      0
-    );
+  get imageUrl(): string | undefined {
+    return this.userData?.imageUrl;
+  }
+
+  get emailAddress(): string | undefined {
+    return this.userData?.email;
+  }
+
+  logout() {
+    this.auth.logout();
   }
 
   addIncome(form: NgForm) {
@@ -165,51 +165,34 @@ export class IncomeComponent {
     this.isFilled = true;
     console.log('Filled in fields:', incomeData);
 
-    this.incomeService
-      .createIncome(incomeData)
-      .then((docRef) => {
-        // Update the document with the generated ID
-        incomeData.id = docRef.id;
-
-        // Update the document in Firestore with the generated ID
-        form.reset();
-      })
-      .catch((error) => {
-        console.error('Error writing document: ', error);
-      });
+    this.store.dispatch(incomeActions.addIncome({ income: incomeData }));
   }
 
   getIncome() {
-    this.isLoading = true;
     if (!this.uid) {
       console.error('Cannot get income, user ID not found');
       return;
     }
 
-    this.incomeService
-      .readIncome(this.uid)
-      .pipe(
-        takeUntil(this.unsubscribe$),
-        tap(() => console.log('income subscription unsubscribed'))
+    this.store.dispatch(incomeActions.loadIncome({ uid: this.uid }));
+    this.income$ = this.store.select(fromIncome.selectAllIncome);
+    this.status$ = this.store.select(fromIncome.selectStatus);
+
+    this.totalAmount$ = this.income$.pipe(
+      map((income: any[]) =>
+        income.reduce(
+          (accumulator, currentValue) => accumulator + currentValue.amount,
+          0
+        )
       )
-      .subscribe(
-        (income: any[]) => {
-          this.isLoading = false;
-          this.incomeData = income;
-          this.isEmpty = income.length === 0;
-          console.log('Fetched income:', this.incomeData);
-          this.calculateTotalAmount();
-        },
-        (error) => {
-          console.error('Error fetching income:', error);
-        }
-      );
+    );
   }
 
   editProfile() {
     this.isEditProfile = !this.isEditProfile;
     console.log('Edit profile:', this.isEditProfile);
   }
+
   deleteIncome(id: string) {
     if (!id) {
       console.error('Cannot delete expense without ID');
@@ -227,19 +210,7 @@ export class IncomeComponent {
       backdrop: false,
     }).then((result) => {
       if (result.isConfirmed) {
-        this.firestore
-          .collection('income')
-          .doc(id)
-          .delete()
-          .then(() => {
-            console.log('Document successfully deleted!');
-            this.incomeData = this.incomeData.filter(
-              (income) => income.id !== id
-            );
-          })
-          .catch((error) => {
-            console.error('Error removing document: ', error);
-          });
+        this.store.dispatch(incomeActions.deleteIncome({ id }));
         Swal.fire({
           title: 'Income deleted!',
           icon: 'success',
