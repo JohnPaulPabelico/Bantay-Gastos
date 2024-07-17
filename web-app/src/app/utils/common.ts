@@ -1,4 +1,4 @@
-import { User } from '../model/users';
+import { User } from '../model/user.model';
 
 export function loginDetails(): User {
   const token = localStorage.getItem('user');
