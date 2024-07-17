@@ -13,6 +13,11 @@ export const selectLoading = createSelector(
   (state: ExpensesState) => state.loading
 );
 
+export const selectStatus = createSelector(
+  selectExpensesState,
+  (state: ExpensesState) => state.status
+);
+
 export const selectError = createSelector(
   selectExpensesState,
   (state: ExpensesState) => state.error
