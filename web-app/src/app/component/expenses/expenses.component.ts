@@ -7,10 +7,10 @@ import Swal from 'sweetalert2';
 import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 import { User } from 'src/app/model/user.model';
 import { UserService } from 'src/app/shared/user.service';
-import * as expensesActions from 'src/app/state/expenses/expenses.actions';
-import * as fromExpenses from 'src/app/state/expenses/expenses.selectors';
 import { Store } from '@ngrx/store';
 import * as fromRoot from 'src/app/state/app.state';
+import * as expensesActions from 'src/app/state/expenses/expenses.actions';
+import * as fromExpenses from 'src/app/state/expenses/expenses.selectors';
 
 @Component({
   selector: 'app-expenses',
