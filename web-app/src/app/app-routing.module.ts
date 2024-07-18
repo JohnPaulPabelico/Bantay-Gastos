@@ -6,8 +6,8 @@ import { RegisterComponent } from './component/register/register.component';
 import { ExpensesComponent } from './component/expenses/expenses.component';
 import { IncomeComponent } from './component/income/income.component';
 import { ForgotPasswordComponent } from './component/forgot-password/forgot-password.component';
-import { VerifyEmailComponent } from './verify-email/verify-email.component';
-import { ForgotPasswordEmailComponent } from './forgot-password-email/forgot-password-email.component';
+import { VerifyEmailComponent } from './component/verify-email/verify-email.component';
+import { ForgotPasswordEmailComponent } from './component/forgot-password-email/forgot-password-email.component';
 import {
   AngularFireAuthGuard,
   redirectUnauthorizedTo,
