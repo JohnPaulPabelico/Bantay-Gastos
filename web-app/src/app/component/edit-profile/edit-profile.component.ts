@@ -5,8 +5,8 @@ import {
   Output,
   ViewChild,
 } from '@angular/core';
-import { UserService } from '../shared/user.service';
-import { AuthService } from '../shared/auth.service';
+import { UserService } from '../../shared/user.service';
+import { AuthService } from '../../shared/auth.service';
 import { NgForm } from '@angular/forms';
 import Swal from 'sweetalert2';
 import { AngularFireStorage } from '@angular/fire/compat/storage';

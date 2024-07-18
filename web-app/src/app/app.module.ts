@@ -17,9 +17,9 @@ import { MatIconModule } from '@angular/material/icon';
 import { IncomeComponent } from './component/income/income.component';
 import { ExpensesComponent } from './component/expenses/expenses.component';
 import { ForgotPasswordComponent } from './component/forgot-password/forgot-password.component';
-import { VerifyEmailComponent } from './verify-email/verify-email.component';
+import { VerifyEmailComponent } from './component/verify-email/verify-email.component';
 import { MatDividerModule } from '@angular/material/divider';
-import { ForgotPasswordEmailComponent } from './forgot-password-email/forgot-password-email.component';
+import { ForgotPasswordEmailComponent } from './component/forgot-password-email/forgot-password-email.component';
 import { MatListModule } from '@angular/material/list';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
@@ -28,9 +28,9 @@ import { AngularFireAuthModule } from '@angular/fire/compat/auth';
 import { AngularFirestoreModule } from '@angular/fire/compat/firestore';
 import { AngularFireModule } from '@angular/fire/compat';
 import { ScrollingModule } from '@angular/cdk/scrolling';
-import { TruncatePipe } from './truncate.pipe';
+import { TruncatePipe } from './pipes/truncate.pipe';
 import { MatMenuModule } from '@angular/material/menu';
-import { EditProfileComponent } from './edit-profile/edit-profile.component';
+import { EditProfileComponent } from './component/edit-profile/edit-profile.component';
 import { StoreModule } from '@ngrx/store';
 import { StoreDevtoolsModule } from '@ngrx/store-devtools';
 import { EffectsModule } from '@ngrx/effects';
@@ -38,7 +38,6 @@ import { expensesReducer } from './state/expenses/expenses.reducer';
 import { ExpensesEffects } from './state/expenses/expenses.effects';
 import { incomeReducer } from './state/income/income.reducer';
 import { IncomeEffects } from './state/income/income.effects';
-
 
 @NgModule({
   declarations: [
@@ -76,8 +75,8 @@ import { IncomeEffects } from './state/income/income.effects';
     MatSelectModule,
     MatMenuModule,
     StoreModule.forRoot({
-      income: incomeReducer, 
-      expenses: expensesReducer, 
+      income: incomeReducer,
+      expenses: expensesReducer,
     }),
     EffectsModule.forRoot([IncomeEffects, ExpensesEffects]),
     StoreDevtoolsModule.instrument({

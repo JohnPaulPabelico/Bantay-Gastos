@@ -7,10 +7,10 @@ import Swal from 'sweetalert2';
 import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 import { UserService } from 'src/app/shared/user.service';
 import { User } from 'src/app/model/user.model';
-import * as incomeActions from 'src/app/state/income/income.actions';
-import * as fromIncome from 'src/app/state/income/income.selectors';
 import { Store } from '@ngrx/store';
 import * as fromRoot from 'src/app/state/app.state';
+import * as incomeActions from 'src/app/state/income/income.actions';
+import * as fromIncome from 'src/app/state/income/income.selectors';
 
 @Component({
   selector: 'app-income',
