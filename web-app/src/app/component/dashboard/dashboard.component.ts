@@ -1,14 +1,20 @@
 import { UserService } from 'src/app/shared/user.service';
 import { Component } from '@angular/core';
 import { AuthService } from 'src/app/shared/auth.service';
-import { ExpenseService } from '../../shared/expense.service';
-import { IncomeService } from 'src/app/shared/income.service';
-import { Subject, combineLatest, takeUntil, tap } from 'rxjs';
+import { Observable, Subject, combineLatest, takeUntil, tap } from 'rxjs';
 import { Chart, registerables } from 'chart.js';
 import { groupBy } from 'lodash';
 Chart.register(...registerables);
 import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 import { User } from 'src/app/model/user.model';
+import { Expenses } from 'src/app/model/expenses.model';
+import { Income } from 'src/app/model/income.model';
+import { Store } from '@ngrx/store';
+import * as fromRoot from 'src/app/state/app.state';
+import * as expensesActions from 'src/app/state/expenses/expenses.actions';
+import * as fromExpenses from 'src/app/state/expenses/expenses.selectors';
+import * as incomeActions from 'src/app/state/income/income.actions';
+import * as fromIncome from 'src/app/state/income/income.selectors';
 
 @Component({
   selector: 'app-dashboard',
@@ -24,19 +30,23 @@ export class DashboardComponent {
   totalIncome: number = 0;
   totalBalance: number = 0;
 
+  private expenseChart: Chart | null = null;
+  private incomeChart: Chart | null = null;
+
   isSmallScreen = false; // default value
   sideNavMode: 'over' | 'side' = 'side';
 
   isEditProfile = false;
   isLoading = true;
   private unsubscribe$ = new Subject<void>();
+  expenses$!: Observable<Expenses[]>;
+  income$!: Observable<Income[]>;
 
   constructor(
     private auth: AuthService,
-    private expenseService: ExpenseService,
-    private incomeService: IncomeService,
     private breakpointObserver: BreakpointObserver,
-    private userService: UserService
+    private userService: UserService,
+    private store: Store<fromRoot.AppState>
   ) {}
 
   ngOnInit() {
@@ -130,11 +140,12 @@ export class DashboardComponent {
       console.error('Cannot get expenses or income, not currently signed in');
       return;
     }
+    this.store.dispatch(expensesActions.loadExpenses({ uid: this.uid }));
+    this.store.dispatch(incomeActions.loadIncome({ uid: this.uid }));
+    this.expenses$ = this.store.select(fromExpenses.selectAllExpenses);
+    this.income$ = this.store.select(fromIncome.selectAllIncome);
 
-    combineLatest([
-      this.expenseService.readExpense(this.uid),
-      this.incomeService.readIncome(this.uid),
-    ])
+    combineLatest([this.expenses$, this.income$])
       .pipe(
         takeUntil(this.unsubscribe$),
         tap(() => console.log('getExpenseIncome subscription unsubscribed'))
@@ -214,7 +225,21 @@ export class DashboardComponent {
     const expensesLabels = monthlyExpenseTotals.map((item) => item.monthYear);
     const incomeLabels = monthlyIncomeTotals.map((item) => item.monthYear);
 
-    new Chart('expensesChart', {
+    // Destroy existing expense chart if it exists
+    if (this.expenseChart) {
+      this.expenseChart.destroy();
+    }
+
+    // Destroy existing income chart if it exists
+    if (this.incomeChart) {
+      this.incomeChart.destroy();
+    }
+
+    // Create new expense chart
+    const expenseCtx = document.getElementById(
+      'expensesChart'
+    ) as HTMLCanvasElement;
+    this.expenseChart = new Chart(expenseCtx, {
       type: 'line',
       data: {
         labels: expensesLabels,
@@ -237,7 +262,11 @@ export class DashboardComponent {
       },
     });
 
-    new Chart('incomeChart', {
+    // Create new income chart
+    const incomeCtx = document.getElementById(
+      'incomeChart'
+    ) as HTMLCanvasElement;
+    this.incomeChart = new Chart(incomeCtx, {
       type: 'line',
       data: {
         labels: incomeLabels,
