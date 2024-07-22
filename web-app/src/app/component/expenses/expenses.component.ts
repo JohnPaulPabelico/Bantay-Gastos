@@ -7,10 +7,15 @@ import Swal from 'sweetalert2';
 import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 import { User } from 'src/app/model/user.model';
 import { UserService } from 'src/app/shared/user.service';
-import { Store } from '@ngrx/store';
+import { select, Store } from '@ngrx/store';
 import * as fromRoot from 'src/app/state/app.state';
 import * as expensesActions from 'src/app/state/expenses/expenses.actions';
 import * as fromExpenses from 'src/app/state/expenses/expenses.selectors';
+import {
+  selectCurrentRouteData,
+  selectCurrentUrl,
+  selectRouteState,
+} from 'src/app/state/router/router.selector';
 
 @Component({
   selector: 'app-expenses',
@@ -23,13 +28,20 @@ export class ExpensesComponent {
   expenses$!: Observable<Expenses[]>;
   status$!: Observable<string>;
   totalAmount$!: Observable<number>;
+  currentUrl$: Observable<string>;
+  currentRouteData$: Observable<any>;
+  routeState$!: Observable<any>;
 
   constructor(
     private auth: AuthService,
     private breakpointObserver: BreakpointObserver,
     private userService: UserService,
     private store: Store<fromRoot.AppState>
-  ) {}
+  ) {
+    this.currentUrl$ = this.store.pipe(select(selectCurrentUrl));
+    this.currentRouteData$ = this.store.pipe(select(selectCurrentRouteData));
+    this.routeState$ = this.store.pipe(select(selectRouteState));
+  }
 
   isSmallScreen = false; // default value
   sideNavMode: 'over' | 'side' = 'side';
@@ -69,6 +81,13 @@ export class ExpensesComponent {
         this.isSmallScreen = result.matches;
         this.sideNavMode = result.matches ? 'over' : 'side';
       });
+
+    this.currentUrl$
+      .pipe(takeUntil(this.unsubscribe$))
+      .subscribe((url) => console.log('Current URL:', url));
+    this.routeState$
+      .pipe(takeUntil(this.unsubscribe$))
+      .subscribe((state) => console.log('State:', state));
 
     this.isFilled = true;
     this.getUserInfo();
